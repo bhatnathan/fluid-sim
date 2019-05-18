@@ -1,0 +1,41 @@
+Before 2019-05-14
+Found GPU Gems 3 article Chapter 30. Real-Time Simulation and Rendering of 3D Fluids
+Built an empty project and imported libraries
+
+2019-05-14
+
+Oh boy am I late in starting this project! Only 10 days left until the project submission. Well here it goes, my first blog entry:
+
+After reading the text from GPU gems again and again and checking the papers/books that they refer to I realized that I had a very vague idea of what I was doing. So I started googling around a little about realtime 3D fluid simulation and I found a paper by a student who did it for their Master's thesis. 
+
+https://www.mikeash.com/pyblog/fluid-simulation-for-dummies.html
+
+Here he describes a fluid simulation model (without any rendering) that he wrote in C using Jos Stam's paper Real-Time Fluid Dynamics for Games. Since his implementation is in C it's written imperatively. This tutorial was pretty straightforward (it does after all have "for dummies" in the title), but since I am writing this project in C++ I decided to attempt to rewrite his code into an object oriented solution.
+
+Today I managed to get some code up for the FluidBox - the container for the fluid - and the FluidCells which can be thought of as a discretized vectorfield within the FluidBox containing information like velocity and density.
+
+My next task will be to write the physics functions that update the FluidCells over time. I have looked at these functions already and I see some potential problems that could arise due to the paradigm shift to object oriented programming.
+
+2019-05-15
+
+Today I "finished" the code for the fluidbox backend. If there are no mistakes this should work as a backend for the fluid simulation physics. There are a few functions I just blindly made using the tutorial I'm following despite not knowing what they do. 
+
+Next step is to render something.
+
+2019-05-16
+
+Today I wrote the code for a Transform class, that keeps the position, rotation and scale of an object. This will make it easier to keep track of where stuff is etc. 
+
+I also wrote some code for rendering the fluidbox. Right now it renders each cell as a 2D square that's size is proportional to the density in each cell. This rendering works, but there are a few bugs.
+
+I seem to be getting an out of bounds exception in my advectVelocity function, but it only happens occasionally. Another problem I'm noticing is if the stepsize is small, all the squares disappear, and the reason for this I am unsure of. 
+
+One of the problems I have faced is that I do not know what "good" values are for the paramaters of the fluidbox. How high should I set viscosity? Diffusion? The density of a fluidcell? Its velocity? Should I add density to all the cells? These are some questions I will have to figure out in the coming days, but the first thing will be to fix my bugs.
+
+2019-05-17
+
+I have discovered a "leak". I don't know where it is, but it seems that the amount of fluid in the fluidbox is not constant, and that it seems to be disappearing somewhere. I do not know where this leak is and I am considering scrapping this version and implementing an imperative version similar to Mike Ash's solution. Whether that is smart to do this late in the game I don't know. 
+
+I am also considering giving up on 3D and instead implementing 2D fluid simulation, since it is a lot easier on processing. Right now I am only able to render a fluidbox of size 10x10x10 without having the framerate take a significant blow. An alternative to making it 2D were to make the fluidbox non cubic, as in it can have a different width, height and depth.
+
+I think what I'm going to do is scrap this version of the project and rewrite the code to use Mike Ash's version, but with variable width, depth and height. 
