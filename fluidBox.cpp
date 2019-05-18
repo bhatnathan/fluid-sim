@@ -116,20 +116,20 @@ void FluidBox::step(float dt) {
 				float rx = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
 				float ry = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
 				float rz = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
-				addVelocity(ivec3(sizeX / 2 + i, sizeY / 2 + j, sizeZ / 2 + k), vec3(0, 1, 0));
+				addVelocity(ivec3(sizeX / 2 + i, sizeY / 2 + j, sizeZ / 2 + k), vec3(0, -1, 0));
 			}
 		}
 	}
 
-	/*for (int i = 1; i < sizeX - 1; i++) {
-		for (int j = 1; j < sizeY - 1; j++) {
-			for (int k = 1; k < sizeZ - 1; k++) {
+	/*for (int i = 2; i < sizeX - 2; i++) {
+		for (int j = 2; j < sizeY - 2; j++) {
+			for (int k = 2; k < sizeZ - 2; k++) {
 				float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 				if (density[IX(i,j,k)] > 0.01)
 				addVelocity(ivec3(i,j,k), vec3(0, -1 * dt, 0));
 			}
 		}
-	}*/
+	} */
 
 	diffuse(1, Vx0, Vx, viscosity, dt);
 	diffuse(2, Vy0, Vy, viscosity, dt);

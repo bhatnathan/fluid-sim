@@ -7,7 +7,7 @@
 #define IV(vec) (IX(vec.x, vec.y, vec.z))
 
 constexpr int iter = 4;
-constexpr float fadeAmt = 0.01;
+constexpr float fadeAmt = 0.02;
 
 using namespace std;
 

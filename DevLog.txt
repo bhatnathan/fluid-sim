@@ -39,3 +39,11 @@ I have discovered a "leak". I don't know where it is, but it seems that the amou
 I am also considering giving up on 3D and instead implementing 2D fluid simulation, since it is a lot easier on processing. Right now I am only able to render a fluidbox of size 10x10x10 without having the framerate take a significant blow. An alternative to making it 2D were to make the fluidbox non cubic, as in it can have a different width, height and depth.
 
 I think what I'm going to do is scrap this version of the project and rewrite the code to use Mike Ash's version, but with variable width, depth and height. 
+
+2019-05-18
+
+It works! I did as I said yesterday and scrapped my version and implemented a version (even more) similar to Mike Ash's. The big differences are that I made a class of fluidbox and changed the code so I could set the width height and depth of the box. 
+
+The amount of fluidcells is still a problem, although it is a bit smaller now that I can set the dimensions of the fluidbox. A potential solution would be to set the 3 diffusion functions and the 3 advect functions in the step function to run in parallel, as they should not affect one another. I do not know how much that would help but it's worth investigating.
+
+The biggest problem I have ahead of me is choosing a method to visualize the fluid. As of right now I draw solid white spheres that are bigger depending on the amount of fluid present in them.
