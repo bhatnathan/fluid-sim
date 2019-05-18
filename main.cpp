@@ -19,7 +19,7 @@ std::chrono::high_resolution_clock::time_point lastTime;
 
 float zRot = 0;
 
-FluidBox fb(25, 25, 10, 0, 0.00001);
+FluidBox fb(25, 25, 3, 0, 0.00001);
 
 int main(int argc, char** argv) {
 

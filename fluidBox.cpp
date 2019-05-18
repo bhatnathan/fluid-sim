@@ -81,7 +81,7 @@ void FluidBox::render() {
 		for (int k = 0; k < sizeZ; k++) {
 			for (int j = 0; j < sizeY; j++) {
 				for (int i = 0; i < sizeX; i++) {
-					float d = density[IX(i, j, k)];
+					float d = density[IX(i, j, k)] / 255;
 					d = std::max(0.0f, std::min(1.0f, d));
 					transform.setMatrix();
 					glTranslatef(i - sizeX / 2, j - sizeY / 2, k - sizeZ / 2);
@@ -112,7 +112,7 @@ void FluidBox::step(float dt) {
 		for (int j = -1; j < 2; j++) {
 			for (int k = -1; k < 2; k++) {
 				float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-				addDensity(ivec3(sizeX / 2 + i, sizeY / 2 + j, sizeZ / 2 + k), r / 5);
+				addDensity(ivec3(sizeX / 2 + i, sizeY / 2 + j, sizeZ / 2 + k), r * 50);
 				float rx = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
 				float ry = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
 				float rz = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - (-1))));
@@ -121,7 +121,7 @@ void FluidBox::step(float dt) {
 		}
 	}
 
-	for (int i = 1; i < sizeX - 1; i++) {
+	/*for (int i = 1; i < sizeX - 1; i++) {
 		for (int j = 1; j < sizeY - 1; j++) {
 			for (int k = 1; k < sizeZ - 1; k++) {
 				float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -129,7 +129,7 @@ void FluidBox::step(float dt) {
 				addVelocity(ivec3(i,j,k), vec3(0, -1 * dt, 0));
 			}
 		}
-	}
+	}*/
 
 	diffuse(1, Vx0, Vx, viscosity, dt);
 	diffuse(2, Vy0, Vy, viscosity, dt);
