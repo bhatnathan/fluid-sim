@@ -19,12 +19,12 @@ std::chrono::high_resolution_clock::time_point lastTime;
 
 float zRot = 0;
 
-FluidBox fb(20, 0, 0.00001);
+FluidBox fb(20, 20, 20, 0, 0.00001);
 
 int main(int argc, char** argv) {
 
 	//TODO make this nicer and put in correct function
-	vec3 pos = vec3(0, 0, -30);
+	vec3 pos = vec3(0, 0, -100);
 	quat rot = angleAxis(radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
 	vec3 scale = vec3(1.0, 1.0, 1.0);
 	Transform t = Transform(pos, rot, scale);

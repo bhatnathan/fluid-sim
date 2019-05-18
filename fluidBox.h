@@ -3,11 +3,11 @@
 #include "transform.h"
 #include "include\glm\glm.hpp"
 
-#define IX(x, y, z) ((x) + (y) * size + (z) * size * size)
+#define IX(x, y, z) ((x) + (y) * sizeX + (z) * sizeX * sizeY)
 #define IV(vec) (IX(vec.x, vec.y, vec.z))
 
 constexpr int iter = 4;
-constexpr float fadeAmt = 0.9;
+constexpr float fadeAmt = 0;
 
 using namespace std;
 
@@ -15,7 +15,7 @@ class FluidBox {
 
 public:
 	FluidBox();
-	FluidBox(int size, float diffusion, float viscosity);
+	FluidBox(int sizeX, int sizeY, int sizeZ, float diffusion, float viscosity);
 	~FluidBox();
 
 	void setTransform(Transform t);
@@ -33,9 +33,11 @@ private:
 	void project(float* velocX, float* velocY, float* velocZ, float* p, float* div);
 	void advect(int b, float* d, float* d0, float* velocX, float* velocY, float* velocZ, float dt);
 
-	void fade();
+	void fade(float dt);
 
-	const int size;
+	const int sizeX;
+	const int sizeY;
+	const int sizeZ;
 	const float diffusion;
 	const float viscosity;
 
