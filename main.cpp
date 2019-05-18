@@ -19,7 +19,7 @@ std::chrono::high_resolution_clock::time_point lastTime;
 
 float zRot = 0;
 
-FluidBox fb(20, 20, 20, 0, 0.00001);
+FluidBox fb(25, 25, 10, 0, 0.00001);
 
 int main(int argc, char** argv) {
 
@@ -108,10 +108,8 @@ void key(unsigned char k, int x, int y) {
 	switch (k) {
 	case 'r':
 		zRot++;
-		vec3 pos = vec3(0, 0, -30);
 		quat rot = angleAxis(radians(zRot), vec3(0.0f, 1.0f, 0.0f));
-		vec3 scale = vec3(1.0, 1.0, 1.0);
-		fb.setTransform(Transform(pos, rot, scale));
+		fb.getTransform()->setRot(rot);
 		break;
 	case 27: //27 is the ASCII code for the ESCAPE key
 		exit(0);

@@ -67,6 +67,10 @@ FluidBox::~FluidBox() {
 	delete[] this->Vz0;
 }
 
+Transform* FluidBox::getTransform() {
+	return &(this->transform);
+}
+
 void FluidBox::setTransform(Transform t) {
 	this->transform = t;
 }
@@ -117,7 +121,7 @@ void FluidBox::step(float dt) {
 		}
 	}
 
-	/*for (int i = 1; i < sizeX - 1; i++) {
+	for (int i = 1; i < sizeX - 1; i++) {
 		for (int j = 1; j < sizeY - 1; j++) {
 			for (int k = 1; k < sizeZ - 1; k++) {
 				float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -125,7 +129,7 @@ void FluidBox::step(float dt) {
 				addVelocity(ivec3(i,j,k), vec3(0, -1 * dt, 0));
 			}
 		}
-	}*/
+	}
 
 	diffuse(1, Vx0, Vx, viscosity, dt);
 	diffuse(2, Vy0, Vy, viscosity, dt);
@@ -142,7 +146,7 @@ void FluidBox::step(float dt) {
 	diffuse(0, s, density, diffusion, dt);
 	advect(0, density, s, Vx, Vy, Vz, dt);
 
-	fade(dt);
+	fade();
 }
 
 void FluidBox::set_bnd(int b, float* x) {
@@ -347,11 +351,11 @@ void FluidBox::advect(int b, float* d, float* d0, float* velocX, float* velocY, 
 	set_bnd(b, d);
 }
 
-void FluidBox::fade(float dt) {
+void FluidBox::fade() {
 	for (int k = 0; k < sizeZ; k++) {
 		for (int j = 0; j < sizeY; j++) {
 			for (int i = 0; i < sizeX; i++) {
-				density[IX(i, j, k)] *= (1 - fadeAmt * dt);
+				density[IX(i, j, k)] *= (1 - fadeAmt);
 			}
 		}
 	}

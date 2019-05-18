@@ -7,7 +7,7 @@
 #define IV(vec) (IX(vec.x, vec.y, vec.z))
 
 constexpr int iter = 4;
-constexpr float fadeAmt = 0;
+constexpr float fadeAmt = 0.01;
 
 using namespace std;
 
@@ -18,6 +18,7 @@ public:
 	FluidBox(int sizeX, int sizeY, int sizeZ, float diffusion, float viscosity);
 	~FluidBox();
 
+	Transform* getTransform();
 	void setTransform(Transform t);
 	void render();
 
@@ -33,7 +34,7 @@ private:
 	void project(float* velocX, float* velocY, float* velocZ, float* p, float* div);
 	void advect(int b, float* d, float* d0, float* velocX, float* velocY, float* velocZ, float dt);
 
-	void fade(float dt);
+	void fade();
 
 	const int sizeX;
 	const int sizeY;

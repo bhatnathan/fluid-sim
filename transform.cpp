@@ -35,6 +35,18 @@ mat4 Transform::getMatrix() {
 	return res;
 }
 
+void Transform::setPos(vec3 pos) {
+	this->pos = pos;
+}
+
+void Transform::setRot(quat rot) {
+	this->rot = rot;
+}
+
+void Transform::setScale(vec3 scale) {
+	this->scale = scale;
+}
+
 void Transform::setMatrix() {
 	float* mat = (float*)glm::value_ptr(this->getMatrix());
 	glLoadMatrixf(mat);
