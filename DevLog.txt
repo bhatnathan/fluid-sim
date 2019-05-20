@@ -47,3 +47,19 @@ It works! I did as I said yesterday and scrapped my version and implemented a ve
 The amount of fluidcells is still a problem, although it is a bit smaller now that I can set the dimensions of the fluidbox. A potential solution would be to set the 3 diffusion functions and the 3 advect functions in the step function to run in parallel, as they should not affect one another. I do not know how much that would help but it's worth investigating.
 
 The biggest problem I have ahead of me is choosing a method to visualize the fluid. As of right now I draw solid white spheres that are bigger depending on the amount of fluid present in them.
+
+2019-05-20
+
+I did another dumb thing! So since I want to simulate more fluid and have it look nice I decided to try to write a fluid simulation using shaders (which run on the GPU). Basically I scrapped my old fluidsim entirely and started fresh now using GLSL. I still have the old fluidsim on github, so in the worst case this will just have been a waste of time instead of something that will ruin everything. 
+
+I am no longer using Mike Ash's code at all, now I going to try and use the code from GPU Gems chapter 38 and GPU Gems 3 chapter 30. I want to start by trying to implement a 2D fluidsimulation (chapter 38 in book 1) and if that goes well I'll move to 3D (chapter 30 in book 3).
+
+This is a stupid idea, and I know that. I have never even written GLSL code before and I have a very limited understanding of how it works. But my main focus is learning, and GLSL seems like a good thing to learn. Therefore I'm going to give it the good ol' college try and see if I can get something working, and if not I'll go back to my old version and clean it up a bit.
+
+Today I converted the HLSL code from chapter 38 to GLSL code. I also followed some tutorials on GLSL to get some basic code running. 
+
+I'm already slightly lost. I have the fragment shader code for pretty much all of my physical functions (save applying a force to the fluid), but I don't know how to create the fluid and run the shader code on it. Rendering it afterwards will also be difficult. I have found a github project that uses chapter 38 as a basis for a fluid simulation in WebGL, and I'm going to try and learn from it, though it is difficult to see how it would translate into C++ code.
+
+https://github.com/mharrys/fluids-2d
+
+I'm not giving up yet, and I am having fun trying to understand how all this works. I'm learning a whole lot too so in that regard I'm happy. I just wish I had started this way sooner as I'm a bit stressed due to the approaching deadline 6 days from now.
