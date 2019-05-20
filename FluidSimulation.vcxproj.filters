@@ -16,22 +16,22 @@
     <Filter Include="Header Files\Library Files">
       <UniqueIdentifier>{d4386fc7-8853-40e8-8a62-507eebbfed7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{0c620f10-a7e6-448f-98cf-18249116cd3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fluidBox.cpp">
+    <ClCompile Include="transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="transform.cpp">
+    <ClCompile Include="shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fluidBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\glew\eglew.h">
       <Filter>Header Files\Library Files</Filter>
     </ClInclude>
@@ -59,9 +59,22 @@
     <ClInclude Include="transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\freeglut.lib" />
     <Library Include="libs\glew32d.lib" />
+    <Library Include="libs\glfw3dll.lib" />
+    <Library Include="libs\glfw3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\simple.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ After reading the text from GPU gems again and again and checking the papers/boo
 
 https://www.mikeash.com/pyblog/fluid-simulation-for-dummies.html
 
-Here he describes a fluid simulation model (without any rendering) that he wrote in C using Jos Stam's paper Real-Time Fluid Dynamics for Games. Since his implementation is in C it's written imperatively. This tutorial was pretty straightforward (it does after all have "for dummies" in the title), but since I am writing this project in C++ I decided to attempt to rewrite his code into an object oriented solution.
+Here he describes a fluid simulation model (without any rendering) that he wrote in C using Jos Stam's paper "Real-Time Fluid Dynamics for Games". Since his implementation is in C it's written imperatively. This tutorial was pretty straightforward (it does after all have "for dummies" in the title), but since I am writing this project in C++ I decided to attempt to rewrite his code into an object oriented solution.
 
 Today I managed to get some code up for the FluidBox - the container for the fluid - and the FluidCells which can be thought of as a discretized vectorfield within the FluidBox containing information like velocity and density.
 

@@ -80,7 +80,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>include\freeglut;include\glew;libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;freeglut.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;freeglut.lib;glew32d.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -92,6 +93,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,12 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fluidBox.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fluidBox.h" />
     <ClInclude Include="include\freeglut\freeglut.h" />
     <ClInclude Include="include\freeglut\freeglut_ext.h" />
     <ClInclude Include="include\freeglut\freeglut_std.h" />
@@ -139,11 +141,18 @@
     <ClInclude Include="include\glew\glew.h" />
     <ClInclude Include="include\glew\glxew.h" />
     <ClInclude Include="include\glew\wglew.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\freeglut.lib" />
     <Library Include="libs\glew32d.lib" />
+    <Library Include="libs\glfw3.lib" />
+    <Library Include="libs\glfw3dll.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.frag" />
+    <None Include="shaders\simple.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
