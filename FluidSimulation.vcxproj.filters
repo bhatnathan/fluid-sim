@@ -70,10 +70,19 @@
     <Library Include="libs\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\simple.vert">
+    <None Include="shaders\jacobi.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="shaders\simple.frag">
+    <None Include="shaders\gradsub.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\divergence.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\boundary.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\advect.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

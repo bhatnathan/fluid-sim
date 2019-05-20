@@ -151,8 +151,11 @@
     <Library Include="libs\glfw3dll.lib" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\simple.frag" />
-    <None Include="shaders\simple.vert" />
+    <None Include="shaders\advect.frag" />
+    <None Include="shaders\boundary.frag" />
+    <None Include="shaders\divergence.frag" />
+    <None Include="shaders\gradsub.frag" />
+    <None Include="shaders\jacobi.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
