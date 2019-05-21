@@ -1,15 +1,21 @@
 #version 330 core
 
-//Input Data
-in vec2 coords;
-in vec2 offset;
-
 // Output data
-out vec4 targetOut;
+out vec4 velocityOut;
 
-uniform float scale;
-uniform sampler2D target;
+uniform sampler2D velocity;
+uniform vec2 screenSize;
 
 void main() {
-	targetOut = scale * texture2D(target, coords + offset);
+	vec2 coords = gl_FragCoord.xy;
+	ivec2 iCoords = ivec2(gl_FragCoord.xy);
+
+	if (iCoords.x - 10 < 0 || iCoords.x + 10 > screenSize.x || iCoords.y - 10 <  0 || iCoords.y + 10 > screenSize.y) {
+        velocityOut = -texelFetch(velocity, iCoords, 0);
+        return;
+    }
+
+	velocityOut = texelFetch(velocity, iCoords, 0);
+
+
 }

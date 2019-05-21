@@ -40,6 +40,7 @@ void Fluid::update(float dt) {
 	gravity(dt);
 	splat(density, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
 	splat(temperature, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
+	boundary();
 
 	divergence();
 	pressure.clear();
@@ -147,6 +148,20 @@ void Fluid::jacobi() {
 
 	resetState();
 	pressure.swapFrameBuffers();
+}
+
+void Fluid::boundary() {
+	boundaryShader.use();
+
+	boundaryShader.setVec2("screenSize", glm::vec2(width, height));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	resetState();
+	velocity.swapFrameBuffers();
 }
 
 void Fluid::splat(Buffer& toSplat, glm::vec2 positon, float radius, float value) {

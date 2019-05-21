@@ -117,7 +117,7 @@ int initProgram() {
 }
 
 void initSimulation() {
-	fluid = Fluid(SCRN_W, SCRN_H, 40);
+	fluid = Fluid(SCRN_W, SCRN_H, 80);
 	lastTime = glfwGetTime();
 }
 
