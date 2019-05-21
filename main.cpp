@@ -6,8 +6,11 @@
 
 #include <iostream>
 
-#include "transform.h"
 #include "shader.h"
+#include "fluid.h"
+
+constexpr unsigned int SCRN_W = 1280;
+constexpr unsigned int SCRN_H = 720;
 
 using namespace glm;
 
@@ -18,29 +21,29 @@ mat4 mvp;
 
 GLFWwindow* window;
 
+Fluid fluid;
+float lastTime;
+
 int initProgram();
+void initSimulation();
 void setUpMVP();
+void update();
 void draw();
+
+//Test
+GLuint quadVao;
 
 int main(int argc, char** argv) {
 
 	if (initProgram() == -1)
 		return -1;
 
-	//TODO remove code from tutorial
-	//REMOVE CODE UNDER!
-
-	//Create VAO
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	//Shader simpleShader("shaders/simple.vert", "shaders/simple.frag");
-	//REMOVE CODE OVER!
-
 	setUpMVP();
 
+	initSimulation();
+
 	do {
+		update();
 		draw();
 		glfwPollEvents();
 
@@ -66,7 +69,7 @@ int initProgram() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(1280, 720, "Fluid Simulation", NULL, NULL);
+	window = glfwCreateWindow(SCRN_W, SCRN_H, "Fluid Simulation", NULL, NULL);
 	if (window == NULL) {
 		std::cerr << "FAILED TO OPEN GLFW WINDOW" << std::endl;
 		glfwTerminate();
@@ -83,7 +86,39 @@ int initProgram() {
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+	//Set up quad
+	short positions[] = {
+		-1, -1,
+		 1, -1,
+		-1,  1,
+		 1,  1,
+	};
+
+	// Create the VAO:
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// Create the VBO:
+	GLuint vbo;
+	GLsizeiptr size = sizeof(positions);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, size, positions, GL_STATIC_DRAW);
+
+	// Set up the vertex layout:
+	GLsizeiptr stride = 2 * sizeof(positions[0]);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, stride, 0);
+
+	quadVao = vao;
+
 	return 0;
+}
+
+void initSimulation() {
+	fluid = Fluid(SCRN_W, SCRN_H, 40);
+	lastTime = glfwGetTime();
 }
 
 void setUpMVP() {
@@ -107,11 +142,19 @@ void setUpMVP() {
 	mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
 }
 
+void update() {
+	float curTime = glfwGetTime();
+	float dt = curTime - lastTime;
+	lastTime = curTime;
+
+	fluid.update(dt);
+}
+
 void draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-
+	fluid.render();
 
 	// Swap buffers
 	glfwSwapBuffers(window);

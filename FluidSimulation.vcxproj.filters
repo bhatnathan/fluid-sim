@@ -30,6 +30,12 @@
     <ClCompile Include="shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fluid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glew\eglew.h">
@@ -62,6 +68,12 @@
     <ClInclude Include="shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fluid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\freeglut.lib" />
@@ -83,6 +95,18 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="shaders\advect.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\base.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\draw.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\splat.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\gravity.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

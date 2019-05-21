@@ -4,6 +4,10 @@
 #include <sstream>
 #include <iostream>
 
+Shader::Shader() {
+	this->id = 0;
+}
+
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;
@@ -70,6 +74,14 @@ void Shader::setInt(const std::string& name, int value) const {
 
 void Shader::setFloat(const std::string& name, float value) const {
 	glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+}
+
+void Shader::setVec2(const std::string& name, glm::vec2 value) const {
+	glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
+}
+
+void Shader::setVec3(const std::string& name, glm::vec3 value) const {
+	glUniform3f(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
 }
 
 void Shader::setMatrix(const std::string& name, glm::mat4& value) const {

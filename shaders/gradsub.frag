@@ -1,20 +1,26 @@
 #version 330 core
 
-//Input Data
-in vec2 coords;
-
 // Output data
-out vec4 newVelocity;
+out vec2 newVelocity;
 
-uniform float rdx;
 uniform sampler2D pressure;
 uniform sampler2D velocity;
+uniform vec2 screenSize;
 
 void main() {
-	float pL = texture2D(pressure, coords - vec2(1, 0)).x;
-	float pR = texture2D(pressure, coords + vec2(1, 0)).x;
-	float pB = texture2D(pressure, coords - vec2(0, 1)).x;
-	float pT = texture2D(pressure, coords + vec2(0, 1)).x; //not sure if .x is correct, hopefully though
-	newVelocity = texture2D(velocity, coords);
-	newVelocity.xy -= rdx * vec2(pR - pL, pT - pB);
+	vec2 fCoords = gl_FragCoord.xy;
+	ivec2 coords = ivec2(gl_FragCoord.xy);
+
+	if (fCoords.x - 1 < 0 || fCoords.x + 1> screenSize.x || fCoords.y - 1< 0 || fCoords.y + 1 > screenSize.y) {
+        newVelocity = vec2(1,1);
+        return;
+    }
+
+	float pL = texelFetchOffset(pressure, coords, 0, ivec2(-1, 0)).x;
+	float pR = texelFetchOffset(pressure, coords, 0, ivec2(1, 0)).x;
+	float pB = texelFetchOffset(pressure, coords, 0, ivec2(0, -1)).x;
+	float pT = texelFetchOffset(pressure, coords, 0, ivec2(0, 1)).x; //not sure if .x is correct, hopefully though
+
+	newVelocity = texelFetch(velocity, coords, 0).xy;
+	newVelocity.xy -= vec2(pR - pL, pT - pB);
 }

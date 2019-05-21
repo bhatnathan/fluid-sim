@@ -63,3 +63,17 @@ I'm already slightly lost. I have the fragment shader code for pretty much all o
 https://github.com/mharrys/fluids-2d
 
 I'm not giving up yet, and I am having fun trying to understand how all this works. I'm learning a whole lot too so in that regard I'm happy. I just wish I had started this way sooner as I'm a bit stressed due to the approaching deadline 6 days from now.
+
+2019-05-21
+
+My dumb thing paid off. I knew I could do it. I found a project online that made an openGL version of chapter 38 of GPU Gems 1 that simulates smoke. I used this to figure out how to make my shaders work. I managed to get my project working in 2D.
+
+https://prideout.net/blog/old/blog/index.html@p=58.html
+
+The same person made a 3D version which I am going to try and use to make my project 3D. 
+
+https://prideout.net/blog/old/blog/index.html@p=66.html
+
+I am really happy with what I have done, it took me many hours. You should know that I didn't copy the project I found, all of my code is my own except for a few minor set up functions.
+
+My next goal is to start trying to implement something in 3D.
