@@ -6,7 +6,7 @@
 class Fluid {
 public:
 	Fluid();
-	Fluid(int width, int height, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight);
+	Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight);
 	~Fluid();
 
 	void update(float dt);

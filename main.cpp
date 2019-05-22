@@ -13,6 +13,9 @@ constexpr unsigned int SCRN_W = 1280;
 constexpr unsigned int SCRN_H = 720;
 
 //Simulation paramaters
+constexpr unsigned int BOX_W = 500;
+constexpr unsigned int BOX_H = 500;
+constexpr unsigned int BOX_D = 500;
 constexpr unsigned int JACOBI_ITERATIONS = 80;
 constexpr float DISSIPATION = 1.0f;
 constexpr float BOUYANCY = 300.0f;
@@ -24,7 +27,8 @@ mat4 Model;
 mat4 View;
 mat4 Projection;
 mat4 mvp;
-GLuint quadVao;
+GLuint cubeCenterVBO;
+GLuint quadVBO;
 
 GLFWwindow* window;
 
@@ -90,6 +94,12 @@ int initProgram() {
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+	//cube center vbo
+	float p[] = { 0, 0, 0 };
+	glGenBuffers(1, &cubeCenterVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeCenterVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(p), &p[0], GL_STATIC_DRAW);
+
 	//Set up quad
 	short positions[] = {
 		-1, -1,
@@ -98,30 +108,20 @@ int initProgram() {
 		 1,  1,
 	};
 
-	// Create the VAO:
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
 	// Create the VBO:
-	GLuint vbo;
 	GLsizeiptr size = sizeof(positions);
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, &quadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 	glBufferData(GL_ARRAY_BUFFER, size, positions, GL_STATIC_DRAW);
 
-	// Set up the vertex layout:
-	GLsizeiptr stride = 2 * sizeof(positions[0]);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, stride, 0);
-
-	quadVao = vao;
-
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	return 0;
 }
 
 void initSimulation() {
-	fluid = Fluid(SCRN_W, SCRN_H, JACOBI_ITERATIONS, DISSIPATION, BOUYANCY, WEIGHT);
+	fluid = Fluid(BOX_W, BOX_H, BOX_D, JACOBI_ITERATIONS, DISSIPATION, BOUYANCY, WEIGHT);
 	lastTime = glfwGetTime();
 }
 

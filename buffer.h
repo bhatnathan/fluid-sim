@@ -4,17 +4,19 @@
 
 struct FrameBuffer {
 	GLuint fboHandle;
-	GLuint textureHandle;
-	int numComponents;
+	GLuint colorTexture;
+	GLsizei width;
+	GLsizei height;
+	GLsizei depth;
 
 	FrameBuffer();
-	FrameBuffer(GLsizei width, GLsizei height, unsigned int numComponents);
+	FrameBuffer(GLsizei width, GLsizei height, GLsizei depth, unsigned int numComponents);
 };
 
 class Buffer {
 public:
 	Buffer();
-	Buffer(GLsizei width, GLsizei height, unsigned int numComponents);
+	Buffer(GLsizei width, GLsizei height, GLsizei depth, unsigned int numComponents);
 	~Buffer();
 
 	void swapFrameBuffers();

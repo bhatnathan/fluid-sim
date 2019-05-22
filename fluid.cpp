@@ -11,7 +11,7 @@ Fluid::Fluid() {
 	this->fluidWeight = 0;
 }
 
-Fluid::Fluid(int width, int height, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
+Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
 	this->width = width;
 	this->height = height;
 	this->solverIterations = solverIterations;
@@ -28,17 +28,20 @@ Fluid::Fluid(int width, int height, int solverIterations, float dissipation, flo
 	this->bouyancyShader = Shader("shaders/base.vert", "shaders/bouyancy.frag");
 	this->drawShader = Shader("shaders/base.vert", "shaders/draw.frag");
 
-	this->velocity = Buffer(width, height, 2);
-	this->density = Buffer(width, height, 1);
-	this->pressure = Buffer(width, height, 1);
-	this->temperature = Buffer(width, height, 1);
-	this->div = Buffer(width, height, 3);
+	this->velocity = Buffer(width, height, depth, 3);
+	this->density = Buffer(width, height, depth, 1);
+	this->pressure = Buffer(width, height, depth, 1);
+	this->temperature = Buffer(width, height, depth, 1);
+	this->div = Buffer(width, height, depth, 3);
 }
 
 Fluid::~Fluid() {
 }
 
 void Fluid::update(float dt) {
+	//TODO find out what these do and fix them
+	//glBindBuffer(GL_ARRAY_BUFFER, Vbos.FullscreenQuad);
+	//glVertexAttribPointer(SlotPosition, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
 	glViewport(0, 0, width, height);
 
 	advect(velocity, dt);
@@ -76,7 +79,7 @@ void Fluid::render() {
 
 	// Draw ink:
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, density.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, density.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -84,9 +87,9 @@ void Fluid::render() {
 }
 
 void Fluid::resetState() {
-	glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_3D, 0);
+	glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_3D, 0);
+	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_3D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_BLEND);
 }
@@ -102,9 +105,9 @@ void Fluid::advect(Buffer& toAdvect, float dt) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toAdvect.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, toAdvect.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, toAdvect.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -120,7 +123,7 @@ void Fluid::divergence() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, div.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -137,9 +140,9 @@ void Fluid::gradsub() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, pressure.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, pressure.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -153,13 +156,13 @@ void Fluid::jacobi() {
 	jacobiShader.setInt("xVec", 0);
 	jacobiShader.setInt("bVec", 1);
 	jacobiShader.setFloat("alpha", -1.0);
-	jacobiShader.setFloat("inverseBeta", 0.25);
+	jacobiShader.setFloat("inverseBeta", 1.0/6.0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, pressure.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pressure.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, pressure.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, div.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, div.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -175,7 +178,7 @@ void Fluid::boundary() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -210,11 +213,11 @@ void Fluid::bouyancy(float dt) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, temperature.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, temperature.in.colorTexture);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, density.in.textureHandle);
+	glBindTexture(GL_TEXTURE_2D, density.in.colorTexture);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
