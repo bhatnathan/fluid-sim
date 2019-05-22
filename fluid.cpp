@@ -38,15 +38,16 @@ void Fluid::update(float dt) {
 
 	//Apply forces
 	gravity(dt);
-	splat(density, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
+	splat(density, glm::vec2(0.5 * width, 0.5 * height), 30, 1); //TODO add splats somewhere else
 	splat(temperature, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
-	boundary();
 
 	divergence();
 	pressure.clear();
 	for (int i = 0; i < solverIterations; i++)
 		jacobi();
 	gradsub();
+
+	boundary();
 }
 
 void Fluid::render() {
