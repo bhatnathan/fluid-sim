@@ -2,7 +2,7 @@
 
 #include "include\glew\glew.h"
 
-typedef struct FrameBuffer {
+struct FrameBuffer {
 	GLuint fboHandle;
 	GLuint textureHandle;
 	int numComponents;

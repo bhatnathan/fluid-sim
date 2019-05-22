@@ -1,20 +1,21 @@
 #version 330 core
 
 // Output Data
-out vec4 FragColor;
+out vec4 advectOut;
 
 uniform sampler2D velocity;
-uniform sampler2D advected;
+uniform sampler2D advecting;
 
-uniform vec2 inverseSize;
-uniform float timestep;
+uniform vec2 inverseScreenSize;
+uniform float timeStep;
 uniform float dissipation;
 
 void main()
 {
     vec2 fragCoord = gl_FragCoord.xy;
 
-    vec2 u = texture(velocity, inverseSize * fragCoord).xy;
-    vec2 coord = inverseSize * (fragCoord - timestep * u);
-    FragColor = dissipation * texture(advected, coord);
+    vec2 u = texture(velocity, inverseScreenSize * fragCoord).xy;
+    vec2 coord = inverseScreenSize * (fragCoord - timeStep * u);
+    advectOut = dissipation * texture(advecting, coord);
+
 }

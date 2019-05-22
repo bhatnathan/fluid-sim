@@ -161,7 +161,7 @@
     <None Include="shaders\divergence.frag" />
     <None Include="shaders\draw.frag" />
     <None Include="shaders\gradsub.frag" />
-    <None Include="shaders\gravity.frag" />
+    <None Include="shaders\bouyancy.frag" />
     <None Include="shaders\jacobi.frag" />
     <None Include="shaders\splat.frag" />
   </ItemGroup>

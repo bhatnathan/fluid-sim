@@ -1,22 +1,22 @@
 #version 330 core
 
 // Output Data
-out vec4 FragColor;
+out vec4 splatOut;
 
-uniform vec2 Point;
-uniform float Radius;
-uniform vec3 FillColor;
+uniform vec2 point;
+uniform float radius;
+uniform vec3 splatAmount;
 
 void main()
 {
-	vec2 coords = gl_FragCoord.xy;
+	vec2 fragCoord = gl_FragCoord.xy;
 
-    float d = distance(Point, coords);
-    if (d < Radius) {
-        float a = (Radius - d) * 0.5;
+    float d = distance(point, fragCoord);
+    if (d < radius) {
+        float a = (radius - d) * 0.5;
         a = min(a, 1.0);
-        FragColor = vec4(FillColor, a);
+        splatOut = vec4(splatAmount, a);
     } else {
-        FragColor = vec4(0);
+        splatOut = vec4(0);
     }
 }

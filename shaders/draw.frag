@@ -1,16 +1,16 @@
 #version 330 core
 
 // Output Data
-out vec4 FragColor;
+out vec4 color;
 
-uniform sampler2D Sampler;
-uniform vec3 FillColor;
-uniform vec2 Scale;
+uniform sampler2D toDraw;
+uniform vec3 fillColor;
+uniform vec2 inverseScreenSize;
 
 void main()
 {
-	vec2 coords = gl_FragCoord.xy;
+	vec2 fragCoord = gl_FragCoord.xy;
 
-    float L = texture(Sampler, coords * Scale).r;
-    FragColor = vec4(FillColor, L);
+    float l = texture(toDraw, fragCoord * inverseScreenSize).r;
+    color = vec4(fillColor, l);
 }

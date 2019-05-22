@@ -6,7 +6,7 @@
 class Fluid {
 public:
 	Fluid();
-	Fluid(int width, int height, int solverIterations);
+	Fluid(int width, int height, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight);
 	~Fluid();
 
 	void update(float dt);
@@ -15,6 +15,9 @@ private:
 	int width;
 	int height;
 	int solverIterations;
+	float dissipation;
+	float fluidBouyancy;
+	float fluidWeight;
 
 	Shader advectShader;
 	Shader divergenceShader;
@@ -22,7 +25,7 @@ private:
 	Shader jacobiShader;
 	Shader boundaryShader;
 	Shader splatShader;
-	Shader gravityShader;
+	Shader bouyancyShader;
 	Shader drawShader;
 
 	Buffer velocity;
@@ -39,6 +42,6 @@ private:
 	void jacobi();
 	void boundary();
 	void splat(Buffer& toSplat, glm::vec2 positon, float radius, float value);
-	void gravity(float dt);
+	void bouyancy(float dt);
 };
 

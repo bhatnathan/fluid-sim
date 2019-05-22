@@ -3,13 +3,21 @@
 #include <iostream>
 
 Fluid::Fluid() {
-
+	this->width = 0;
+	this->height = 0;
+	this->solverIterations = 0;
+	this->dissipation = 0;
+	this->fluidBouyancy = 0;
+	this->fluidWeight = 0;
 }
 
-Fluid::Fluid(int width, int height, int solverIterations) {
+Fluid::Fluid(int width, int height, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
 	this->width = width;
 	this->height = height;
 	this->solverIterations = solverIterations;
+	this->dissipation = dissipation;
+	this->fluidBouyancy = fluidBouyancy;
+	this->fluidWeight = fluidWeight;
 
 	this->advectShader = Shader("shaders/base.vert", "shaders/advect.frag");
 	this->divergenceShader = Shader("shaders/base.vert", "shaders/divergence.frag");
@@ -17,7 +25,7 @@ Fluid::Fluid(int width, int height, int solverIterations) {
 	this->jacobiShader = Shader("shaders/base.vert", "shaders/jacobi.frag");
 	this->boundaryShader = Shader("shaders/base.vert", "shaders/boundary.frag");
 	this->splatShader = Shader("shaders/base.vert", "shaders/splat.frag");
-	this->gravityShader = Shader("shaders/base.vert", "shaders/gravity.frag");
+	this->bouyancyShader = Shader("shaders/base.vert", "shaders/bouyancy.frag");
 	this->drawShader = Shader("shaders/base.vert", "shaders/draw.frag");
 
 	this->velocity = Buffer(width, height, 2);
@@ -37,7 +45,7 @@ void Fluid::update(float dt) {
 	advect(density, dt);
 
 	//Apply forces
-	gravity(dt);
+	bouyancy(dt);
 	splat(density, glm::vec2(0.5 * width, 0.5 * height), 30, 1); //TODO add splats somewhere else
 	splat(temperature, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
 
@@ -53,19 +61,22 @@ void Fluid::update(float dt) {
 void Fluid::render() {
 	drawShader.use();
 
+	drawShader.setVec3("fillColor", glm::vec3(1, 1, 1)); //TODO fun color function?
+	drawShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
+
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //TODO possibly put in main in initProgram
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Set render target to the backbuffer:
-	glViewport(0, 0, width, height); //TODO might need to be width and height * 2
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); //TODO not sure if 0 is correct
+	glViewport(0, 0, width, height);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw ink:
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, density.in.textureHandle);
-	drawShader.setVec3("FillColor", glm::vec3(1, 1, 1));
-	drawShader.setVec2("Scale", glm::vec2(1.0 / width, 1.0 / height));//TODO might need to be width and height * 2
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glDisable(GL_BLEND);
@@ -82,17 +93,17 @@ void Fluid::resetState() {
 void Fluid::advect(Buffer& toAdvect, float dt) {
 	advectShader.use();
 
-	advectShader.setFloat("timestep", dt);
-	advectShader.setVec2("inverseSize", glm::vec2(1.0 / width, 1.0 / height)); //TODO look up what to set this to.
-	advectShader.setInt("advected", 1); //TODO not sure if correct
-	advectShader.setFloat("dissipation", 1.0); //TODO move dissipation to some nice variable
+	advectShader.setFloat("timeStep", dt);
+	advectShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
+	advectShader.setInt("advecting", 1);
+	advectShader.setFloat("dissipation", dissipation);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toAdvect.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, toAdvect.in.textureHandle);
-	//glActiveTexture(GL_TEXTURE2); //TODO this was for the obstacles but I don't know if it is still needed
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
@@ -107,7 +118,7 @@ void Fluid::divergence() {
 	glBindFramebuffer(GL_FRAMEBUFFER, div.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
-	//glActiveTexture(GL_TEXTURE1); //TODO this was for the obstacles but I don't know if it is still needed
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
@@ -125,7 +136,7 @@ void Fluid::gradsub() {
 	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, pressure.in.textureHandle);
-	//glActiveTexture(GL_TEXTURE2); //TODO this was for the obstacles but I don't know if it is still needed
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
@@ -135,8 +146,8 @@ void Fluid::gradsub() {
 void Fluid::jacobi() {
 	jacobiShader.use();
 
-	jacobiShader.setFloat("alpha", -1.0); //TODO No idea if this is right
-	jacobiShader.setFloat("rBeta", 0.25);
+	jacobiShader.setFloat("alpha", -1.0);
+	jacobiShader.setFloat("inverseBeta", 0.25);
 	jacobiShader.setInt("bVec", 1);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, pressure.out.fboHandle);
@@ -144,7 +155,7 @@ void Fluid::jacobi() {
 	glBindTexture(GL_TEXTURE_2D, pressure.in.textureHandle);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, div.in.textureHandle);
-	//glActiveTexture(GL_TEXTURE2); //TODO this was for the obstacles but I don't know if it is still needed
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
@@ -159,6 +170,7 @@ void Fluid::boundary() {
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, velocity.in.textureHandle);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
@@ -168,23 +180,26 @@ void Fluid::boundary() {
 void Fluid::splat(Buffer& toSplat, glm::vec2 positon, float radius, float value) {
 	splatShader.use();
 
-	splatShader.setVec2("Point", positon);
-	splatShader.setFloat("Radius", radius);
-	splatShader.setVec3("FillColor", glm::vec3(value, value, value));
+	splatShader.setVec2("point", positon);
+	splatShader.setFloat("radius", radius);
+	splatShader.setVec3("splatAmount", glm::vec3(value, value, value));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toSplat.in.fboHandle);
 	glEnable(GL_BLEND);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	resetState();
 }
 
-void Fluid::gravity(float dt) {
-	gravityShader.use();
+void Fluid::bouyancy(float dt) {
+	bouyancyShader.use();
 
-	gravityShader.setFloat("timeStep", dt);
-	gravityShader.setInt("temperature", 1);
-	gravityShader.setInt("density", 2);
+	bouyancyShader.setFloat("timeStep", dt);
+	bouyancyShader.setInt("temperature", 1);
+	bouyancyShader.setInt("density", 2);
+	bouyancyShader.setFloat("bouyancy", fluidBouyancy);
+	bouyancyShader.setFloat("weight", fluidWeight);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
@@ -193,6 +208,7 @@ void Fluid::gravity(float dt) {
 	glBindTexture(GL_TEXTURE_2D, temperature.in.textureHandle);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, density.in.textureHandle);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
 	resetState();

@@ -12,12 +12,19 @@
 constexpr unsigned int SCRN_W = 1280;
 constexpr unsigned int SCRN_H = 720;
 
+//Simulation paramaters
+constexpr unsigned int JACOBI_ITERATIONS = 80;
+constexpr float DISSIPATION = 1.0f;
+constexpr float BOUYANCY = 300.0f;
+constexpr float WEIGHT = 1.0f;
+
 using namespace glm;
 
 mat4 Model;
 mat4 View;
 mat4 Projection;
 mat4 mvp;
+GLuint quadVao;
 
 GLFWwindow* window;
 
@@ -29,9 +36,6 @@ void initSimulation();
 void setUpMVP();
 void update();
 void draw();
-
-//Test
-GLuint quadVao;
 
 int main(int argc, char** argv) {
 
@@ -117,7 +121,7 @@ int initProgram() {
 }
 
 void initSimulation() {
-	fluid = Fluid(SCRN_W, SCRN_H, 80);
+	fluid = Fluid(SCRN_W, SCRN_H, JACOBI_ITERATIONS, DISSIPATION, BOUYANCY, WEIGHT);
 	lastTime = glfwGetTime();
 }
 

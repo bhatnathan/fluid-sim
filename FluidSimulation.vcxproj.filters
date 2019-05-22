@@ -106,7 +106,7 @@
     <None Include="shaders\splat.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="shaders\gravity.frag">
+    <None Include="shaders\bouyancy.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
