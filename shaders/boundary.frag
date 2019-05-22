@@ -4,6 +4,7 @@
 out vec4 velocityOut;
 
 uniform sampler2D velocity;
+
 uniform vec2 screenSize;
 
 void main() {

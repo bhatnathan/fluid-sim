@@ -6,6 +6,7 @@ out vec2 velocityOut;
 uniform sampler2D velocity;
 uniform sampler2D temperature;
 uniform sampler2D density;
+
 uniform float timeStep;
 uniform float bouyancy;
 uniform float weight;

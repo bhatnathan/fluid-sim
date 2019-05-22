@@ -61,6 +61,7 @@ void Fluid::update(float dt) {
 void Fluid::render() {
 	drawShader.use();
 
+	drawShader.setInt("toDraw", 0);
 	drawShader.setVec3("fillColor", glm::vec3(1, 1, 1)); //TODO fun color function?
 	drawShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
 
@@ -93,10 +94,11 @@ void Fluid::resetState() {
 void Fluid::advect(Buffer& toAdvect, float dt) {
 	advectShader.use();
 
-	advectShader.setFloat("timeStep", dt);
-	advectShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
+	advectShader.setInt("velocity", 0);
 	advectShader.setInt("advecting", 1);
+	advectShader.setFloat("timeStep", dt);
 	advectShader.setFloat("dissipation", dissipation);
+	advectShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toAdvect.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
@@ -113,6 +115,7 @@ void Fluid::advect(Buffer& toAdvect, float dt) {
 void Fluid::divergence() {
 	divergenceShader.use();
 
+	divergenceShader.setInt("vecField", 0);
 	divergenceShader.setFloat("divergenceMod", 0.5);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, div.out.fboHandle);
@@ -128,6 +131,7 @@ void Fluid::divergence() {
 void Fluid::gradsub() {
 	gradsubShader.use();
 
+	gradsubShader.setInt("velocity", 0);
 	gradsubShader.setInt("pressure", 1);
 	gradsubShader.setVec2("screenSize", glm::vec2(width, height));
 
@@ -146,9 +150,10 @@ void Fluid::gradsub() {
 void Fluid::jacobi() {
 	jacobiShader.use();
 
+	jacobiShader.setInt("xVec", 0);
+	jacobiShader.setInt("bVec", 1);
 	jacobiShader.setFloat("alpha", -1.0);
 	jacobiShader.setFloat("inverseBeta", 0.25);
-	jacobiShader.setInt("bVec", 1);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, pressure.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
@@ -165,6 +170,7 @@ void Fluid::jacobi() {
 void Fluid::boundary() {
 	boundaryShader.use();
 
+	boundaryShader.setInt("velocity", 0);
 	boundaryShader.setVec2("screenSize", glm::vec2(width, height));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
@@ -195,9 +201,10 @@ void Fluid::splat(Buffer& toSplat, glm::vec2 positon, float radius, float value)
 void Fluid::bouyancy(float dt) {
 	bouyancyShader.use();
 
-	bouyancyShader.setFloat("timeStep", dt);
+	boundaryShader.setInt("velocity", 0);
 	bouyancyShader.setInt("temperature", 1);
 	bouyancyShader.setInt("density", 2);
+	bouyancyShader.setFloat("timeStep", dt);
 	bouyancyShader.setFloat("bouyancy", fluidBouyancy);
 	bouyancyShader.setFloat("weight", fluidWeight);
 
@@ -210,7 +217,7 @@ void Fluid::bouyancy(float dt) {
 	glBindTexture(GL_TEXTURE_2D, density.in.textureHandle);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	
+
 	resetState();
 	velocity.swapFrameBuffers();
 }

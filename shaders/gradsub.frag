@@ -3,8 +3,9 @@
 // Output data
 out vec2 newVelocity;
 
-uniform sampler2D pressure;
 uniform sampler2D velocity;
+uniform sampler2D pressure;
+
 uniform vec2 screenSize;
 
 void main() {

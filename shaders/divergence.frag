@@ -4,6 +4,7 @@
 out float divergence;
 
 uniform sampler2D vecField;
+
 uniform float divergenceMod;
 
 void main() {

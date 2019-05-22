@@ -6,9 +6,9 @@ out vec4 advectOut;
 uniform sampler2D velocity;
 uniform sampler2D advecting;
 
-uniform vec2 inverseScreenSize;
 uniform float timeStep;
 uniform float dissipation;
+uniform vec2 inverseScreenSize;
 
 void main()
 {

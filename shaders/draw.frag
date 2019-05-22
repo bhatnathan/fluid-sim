@@ -4,6 +4,7 @@
 out vec4 color;
 
 uniform sampler2D toDraw;
+
 uniform vec3 fillColor;
 uniform vec2 inverseScreenSize;
 
