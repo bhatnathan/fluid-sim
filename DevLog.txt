@@ -77,3 +77,13 @@ https://prideout.net/blog/old/blog/index.html@p=66.html
 I am really happy with what I have done, it took me many hours. You should know that I didn't copy the project I found, all of my code is my own except for a few minor set up functions.
 
 My next goal is to start trying to implement something in 3D.
+
+2019-05-22
+
+I DID IT! I managed to create a 3D fluidsimulation! I used the previously mentioned project as a guide as well as GPU gems chapter 30 book 3. 
+
+I ran into some problems with the black screen of death for a few (possibly 5) hours. Turns out I forgot to set up the VAOs. Easy mistake to make I guess, but it always feels so dumb when it's an easy fix.
+
+Tomorrow I plan on cleaning up my code a whole lot, and playing around with parameters, and possibly a different solver (mentioned in chapter 30) that improves detail apparently. I might have some work to do in other courses but if not I may also start on my report for this project.
+
+I'm so happy I didn't give up.
