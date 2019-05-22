@@ -9,8 +9,8 @@ public:
 	Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight);
 	~Fluid();
 
-	void update(float dt);
-	void render(GLuint boxVBO);
+	void update(float dt, GLuint quadVBO);
+	void render(GLuint boxVBO, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight);
 private:
 	int width;
 	int height;

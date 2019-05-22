@@ -7,9 +7,11 @@ uniform sampler3D velocity;
 
 uniform vec3 boxSize;
 
+in float gLayer;
+
 void main() {
 
-	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	velocityOut = texelFetch(velocity, fragCoord, 0);
 

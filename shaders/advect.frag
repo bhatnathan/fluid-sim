@@ -10,9 +10,11 @@ uniform float timeStep;
 uniform float dissipation;
 uniform vec3 inverseBoxSize;
 
+in float gLayer;
+
 void main()
 {
-    vec3 fragCoord = gl_FragCoord.xyz; //TODO not sure if correct, guid uses an in gLayer as z component
+    vec3 fragCoord = vec3(gl_FragCoord.xy, gLayer); //TODO not sure if correct, guid uses an in gLayer as z component
 
     vec3 u = texture(velocity, inverseBoxSize * fragCoord).xyz;
     vec3 coord = inverseBoxSize * (fragCoord - timeStep * u);

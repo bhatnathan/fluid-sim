@@ -156,10 +156,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\advect.frag" />
+    <None Include="shaders\base.geom" />
     <None Include="shaders\base.vert" />
     <None Include="shaders\boundary.frag" />
     <None Include="shaders\divergence.frag" />
     <None Include="shaders\draw.frag" />
+    <None Include="shaders\draw.geom" />
+    <None Include="shaders\draw.vert" />
     <None Include="shaders\gradsub.frag" />
     <None Include="shaders\bouyancy.frag" />
     <None Include="shaders\jacobi.frag" />

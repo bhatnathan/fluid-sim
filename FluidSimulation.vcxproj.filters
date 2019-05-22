@@ -109,5 +109,14 @@
     <None Include="shaders\bouyancy.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shaders\draw.geom">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\draw.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\base.geom">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

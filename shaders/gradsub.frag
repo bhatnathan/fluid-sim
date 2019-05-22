@@ -8,8 +8,10 @@ uniform sampler3D pressure;
 
 uniform vec2 screenSize;
 
+in float gLayer;
+
 void main() {
-	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	float pE = texelFetchOffset(pressure, fragCoord, 0, ivec3(1, 0, 0)).x;
 	float pN = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, 1, 0)).x;

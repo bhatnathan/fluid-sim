@@ -7,8 +7,10 @@ uniform sampler3D vecField;
 
 uniform float divergenceMod;
 
+in float gLayer;
+
 void main() {
-	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	float wE = texelFetchOffset(vecField, fragCoord, 0, ivec3(1, 0, 0)).x;
 	float wN = texelFetchOffset(vecField, fragCoord, 0, ivec3(0, 1, 0)).y;

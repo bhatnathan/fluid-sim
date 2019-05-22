@@ -23,9 +23,9 @@ constexpr float WEIGHT = 1.0f;
 
 using namespace glm;
 
-mat4 Model;
-mat4 View;
-mat4 Projection;
+mat4 model;
+mat4 view;
+mat4 projection;
 mat4 mvp;
 GLuint cubeCenterVBO;
 GLuint quadVBO;
@@ -129,22 +129,22 @@ void initSimulation() {
 void setUpMVP() {
 	//SET UP MODEL VIEW AND PROJECTION MATRICES
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	Projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.1f, 100.0f);
 
 	// Or, for an ortho camera :
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
 	// Camera matrix
-	View = glm::lookAt(
+	view = glm::lookAt(
 		glm::vec3(4, 3, 3), // Camera is at (4,3,3), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 
-	// Model matrix : an identity matrix (model will be at the origin)
-	Model = glm::mat4(1.0f);
+	// model matrix : an identity matrix (model will be at the origin)
+	model = glm::mat4(1.0f);
 	// Our ModelViewProjection : multiplication of our 3 matrices
-	mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
+	mvp = projection * view * model; // Remember, matrix multiplication is the other way around
 }
 
 void update() {
@@ -152,14 +152,14 @@ void update() {
 	float dt = curTime - lastTime;
 	lastTime = curTime;
 
-	fluid.update(dt);
+	fluid.update(dt, quadVBO);
 }
 
 void draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-	fluid.render(cubeCenterVBO);
+	fluid.render(cubeCenterVBO, model, view, projection, mvp, SCRN_W, SCRN_H);
 
 	// Swap buffers
 	glfwSwapBuffers(window);

@@ -9,8 +9,10 @@ uniform sampler3D bVec; //Ax = b
 uniform float alpha;
 uniform float inverseBeta;
 
+in float gLayer;
+
 void main() {
-	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	vec4 xE = texelFetchOffset(xVec, fragCoord, 0, ivec3(1, 0, 0));
 	vec4 xN = texelFetchOffset(xVec, fragCoord, 0, ivec3(0, 1, 0));

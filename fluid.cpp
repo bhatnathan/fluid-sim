@@ -21,14 +21,14 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->fluidBouyancy = fluidBouyancy;
 	this->fluidWeight = fluidWeight;
 
-	this->advectShader = Shader("shaders/base.vert", "shaders/advect.frag");
-	this->divergenceShader = Shader("shaders/base.vert", "shaders/divergence.frag");
-	this->gradsubShader = Shader("shaders/base.vert", "shaders/gradsub.frag");
-	this->jacobiShader = Shader("shaders/base.vert", "shaders/jacobi.frag");
-	this->boundaryShader = Shader("shaders/base.vert", "shaders/boundary.frag");
-	this->splatShader = Shader("shaders/base.vert", "shaders/splat.frag");
-	this->bouyancyShader = Shader("shaders/base.vert", "shaders/bouyancy.frag");
-	this->drawShader = Shader("shaders/base.vert", "shaders/draw.frag");
+	this->advectShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/advect.frag");
+	this->divergenceShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/divergence.frag");
+	this->gradsubShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/gradsub.frag");
+	this->jacobiShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/jacobi.frag");
+	this->boundaryShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/boundary.frag");
+	this->splatShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/splat.frag");
+	this->bouyancyShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/bouyancy.frag");
+	this->drawShader = Shader("shaders/draw.vert", "shaders/draw.geom", "shaders/draw.frag");
 
 	this->velocity = Buffer(width, height, depth, 3);
 	this->density = Buffer(width, height, depth, 1);
@@ -41,10 +41,10 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 Fluid::~Fluid() {
 }
 
-void Fluid::update(float dt) {
+void Fluid::update(float dt, GLuint quadVBO) {
 	//TODO find out what these do and fix them
-	//glBindBuffer(GL_ARRAY_BUFFER, Vbos.FullscreenQuad);
-	//glVertexAttribPointer(SlotPosition, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
 	glViewport(0, 0, width, height);
 
 	advect(velocity, dt);
@@ -64,12 +64,19 @@ void Fluid::update(float dt) {
 	boundary();
 }
 
-void Fluid::render(GLuint boxVBO) {
+void Fluid::render(GLuint boxVBO, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight) {
 	drawShader.use();
 
-	drawShader.setInt("toDraw", 0);
-	drawShader.setVec3("fillColor", glm::vec3(1, 1, 1)); //TODO fun color function?
-	drawShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
+	drawShader.setMatrix("ModelviewProjection", mvp);
+	drawShader.setMatrix("Modelview", model);
+	drawShader.setMatrix("ViewMatrix", view);
+	drawShader.setMatrix("ProjectionMatrix", projection);
+	drawShader.setInt("RayStartPoints", 1); //TODO check if needed. Could apply to more parameters
+	drawShader.setInt("RayStopPoints", 2);
+	drawShader.setVec3("EyePosition", glm::vec3(0, 0, 3.5f)); //TODO figure out what to set this to
+	drawShader.setVec3("RayOrigin", glm::vec3(glm::transpose(model) * glm::vec4(0, 0, 3.5f, 0))); //TODO change?
+	drawShader.setFloat("FocalLength", 1.0f / std::tan(45.0f / 2));
+	drawShader.setVec2("WindowSize", glm::vec2(screenWidth, screenHeight));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, width, height); //TODO change from width and height

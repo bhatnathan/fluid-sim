@@ -11,9 +11,11 @@ uniform float timeStep;
 uniform float bouyancy;
 uniform float weight;
 
+in float gLayer;
+
 void main()
 {
-    ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
+    ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	float temperatureValue = texelFetch(temperature, fragCoord, 0).r;
 	float densityValue = texelFetch(density, fragCoord, 0).x;

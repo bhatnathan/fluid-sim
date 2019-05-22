@@ -7,9 +7,11 @@ uniform vec3 point;
 uniform float radius;
 uniform vec3 splatAmount;
 
+in float gLayer;
+
 void main()
 {
-	vec3 fragCoord = gl_FragCoord.xyz;
+	vec3 fragCoord = vec3(gl_FragCoord.xy, gLayer);
 
     float d = distance(point, fragCoord);
     if (d < radius) {
