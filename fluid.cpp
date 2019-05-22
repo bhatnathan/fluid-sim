@@ -13,7 +13,7 @@ Fluid::Fluid() {
 }
 
 Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
-	/*this->width = width;
+	this->width = width;
 	this->height = height;
 	this->depth = depth;
 	this->solverIterations = solverIterations;
@@ -34,7 +34,7 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->density = Buffer(width, height, depth, 1);
 	this->pressure = Buffer(width, height, depth, 1);
 	this->temperature = Buffer(width, height, depth, 1);
-	this->div = Buffer(width, height, depth, 3);*/
+	this->div = Buffer(width, height, depth, 3);
 
 }
 
@@ -43,55 +43,55 @@ Fluid::~Fluid() {
 
 void Fluid::update(float dt, GLuint quadVBO) {
 	//TODO find out what these do and fix them
-	//glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	//glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
-	//glViewport(0, 0, width, height);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
+	glViewport(0, 0, width, height);
 
-	//advect(velocity, dt);
-	//advect(density, dt);
+	advect(velocity, dt);
+	advect(density, dt);
 
 	//Apply forces
-	//bouyancy(dt);
-	//splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1); //TODO add splats somewhere else
-	//splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1);
+	bouyancy(dt);
+	splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1); //TODO add splats somewhere else
+	splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1);
 
-	//divergence();
-	//pressure.clear();
-	//for (int i = 0; i < solverIterations; i++)
-	//	jacobi();
-	//gradsub();
+	divergence();
+	pressure.clear();
+	for (int i = 0; i < solverIterations; i++)
+		jacobi();
+	gradsub();
 
-	//boundary();
+	boundary();
 }
 
 void Fluid::render(GLuint boxVBO, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight) {
-	//drawShader.use();
+	drawShader.use();
 
-	//drawShader.setMatrix("ModelviewProjection", mvp);
-	//drawShader.setMatrix("Modelview", model);
-	//drawShader.setMatrix("ViewMatrix", view);
-	//drawShader.setMatrix("ProjectionMatrix", projection);
-	//drawShader.setInt("RayStartPoints", 1); //TODO check if needed. Could apply to more parameters
-	//drawShader.setInt("RayStopPoints", 2);
-	//drawShader.setVec3("EyePosition", glm::vec3(0, 0, 3.5f)); //TODO figure out what to set this to
-	//drawShader.setVec3("RayOrigin", glm::vec3(glm::transpose(model) * glm::vec4(0, 0, 3.5f, 1))); //TODO change?
-	//drawShader.setFloat("FocalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
-	//drawShader.setVec2("WindowSize", glm::vec2(screenWidth, screenHeight));
+	drawShader.setMatrix("ModelviewProjection", mvp);
+	drawShader.setMatrix("Modelview", model);
+	drawShader.setMatrix("ViewMatrix", view);
+	drawShader.setMatrix("ProjectionMatrix", projection);
+	drawShader.setInt("RayStartPoints", 1); //TODO check if needed. Could apply to more parameters
+	drawShader.setInt("RayStopPoints", 2);
+	drawShader.setVec3("EyePosition", glm::vec3(0, 0, 3.5f)); //TODO figure out what to set this to
+	drawShader.setVec3("RayOrigin", glm::vec3(glm::transpose(model) * glm::vec4(0, 0, 3.5f, 1))); //TODO change?
+	drawShader.setFloat("FocalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
+	drawShader.setVec2("WindowSize", glm::vec2(screenWidth, screenHeight));
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glViewport(0, 0, screenWidth, screenHeight);
-	//glClearColor(0, 0, 0, 1);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glEnable(GL_BLEND);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, screenWidth, screenHeight);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glEnable(GL_BLEND);
 
 	// Draw ink:
-	//glBindBuffer(GL_ARRAY_BUFFER, boxVBO);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_3D, density.in.colorTexture);
+	glBindBuffer(GL_ARRAY_BUFFER, boxVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_3D, density.in.colorTexture);
 
-	//glDrawArrays(GL_POINTS, 0, 1);
-	//glDisable(GL_BLEND);
+	glDrawArrays(GL_POINTS, 0, 1);
+	glDisable(GL_BLEND);
 }
 
 void Fluid::resetState() {

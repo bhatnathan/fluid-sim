@@ -94,6 +94,11 @@ int initProgram() {
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+	// Create the VAO:
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	//Cube Center vbo
 	float p[] = { 0, 0, 0 };
 	glGenBuffers(1, &cubeCenterVBO);
@@ -113,6 +118,11 @@ int initProgram() {
 	glGenBuffers(1, &quadVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 	glBufferData(GL_ARRAY_BUFFER, size, positions, GL_STATIC_DRAW);
+
+	// Set up the vertex layout:
+	GLsizeiptr stride = 2 * sizeof(positions[0]);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, stride, 0);
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -136,7 +146,7 @@ void setUpMVP() {
 
 	// Camera matrix
 	view = glm::lookAt(
-		glm::vec3(10, 10, 10), // Camera is at (4,3,3), in World Space
+		glm::vec3(0, 0, 3.5), // Camera is at (4,3,3), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
