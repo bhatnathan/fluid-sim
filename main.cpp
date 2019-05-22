@@ -13,12 +13,12 @@ constexpr unsigned int SCRN_W = 1280;
 constexpr unsigned int SCRN_H = 720;
 
 //Simulation paramaters
-constexpr unsigned int BOX_W = 96; //Note that making the box too large will result in the frame buffer object not being able to be created
-constexpr unsigned int BOX_H = 96;
-constexpr unsigned int BOX_D = 96;
-constexpr unsigned int JACOBI_ITERATIONS = 80;
+constexpr unsigned int BOX_W = 200; //Note that making the box too large will result in the frame buffer object not being able to be created
+constexpr unsigned int BOX_H = 200;
+constexpr unsigned int BOX_D = 200;
+constexpr unsigned int JACOBI_ITERATIONS = 40;
 constexpr float DISSIPATION = 1.0f;
-constexpr float BOUYANCY = 300.0f;
+constexpr float BOUYANCY = 100.0f;
 constexpr float WEIGHT = 1.0f;
 
 using namespace glm;
