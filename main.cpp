@@ -16,7 +16,7 @@ constexpr unsigned int SCRN_H = 720;
 constexpr unsigned int BOX_W = 96; //Note that making the box too large will result in the frame buffer object not being able to be created
 constexpr unsigned int BOX_H = 96;
 constexpr unsigned int BOX_D = 96;
-constexpr unsigned int JACOBI_ITERATIONS = 80;
+constexpr unsigned int JACOBI_ITERATIONS = 40;
 constexpr float DISSIPATION = 1.0f;
 constexpr float BOUYANCY = 300.0f;
 constexpr float WEIGHT = 1.0f;
@@ -128,15 +128,15 @@ void initSimulation() {
 
 void setUpMVP() {
 	//SET UP MODEL VIEW AND PROJECTION MATRICES
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.1f, 100.0f);
+	// Projection matrix : 45° Field of View, 16:9 ratio, display range : 0.0 unit <-> 100 units
+	projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.0f, 100.0f);
 
 	// Or, for an ortho camera :
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
 	// Camera matrix
 	view = glm::lookAt(
-		glm::vec3(4, 3, 3), // Camera is at (4,3,3), in World Space
+		glm::vec3(10, 10, 10), // Camera is at (4,3,3), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
@@ -159,7 +159,7 @@ void draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-	fluid.render(cubeCenterVBO, model, view, projection, mvp, SCRN_W, SCRN_H);
+	fluid.render(cubeCenterVBO, view * model, view, projection, mvp, SCRN_W, SCRN_H);
 
 	// Swap buffers
 	glfwSwapBuffers(window);

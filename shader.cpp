@@ -119,6 +119,11 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* geometryPath, const GLcha
 	glAttachShader(id, vertex);
 	glAttachShader(id, geometry);
 	glAttachShader(id, fragment);
+
+	//TODO not sure if needed
+	glBindAttribLocation(id, 0, "Position");
+	glBindAttribLocation(id, 0, "TexCoord");
+
 	glLinkProgram(id);
 	checkCompileErrors(id, "PROGRAM");
 	// delete the shaders as they're linked into our program now and no longer necessary
