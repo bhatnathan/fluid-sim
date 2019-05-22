@@ -3,13 +3,13 @@
 // Output Data
 out vec4 splatOut;
 
-uniform vec2 point;
+uniform vec3 point;
 uniform float radius;
 uniform vec3 splatAmount;
 
 void main()
 {
-	vec2 fragCoord = gl_FragCoord.xy;
+	vec3 fragCoord = gl_FragCoord.xyz;
 
     float d = distance(point, fragCoord);
     if (d < radius) {

@@ -35,6 +35,7 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->pressure = Buffer(width, height, depth, 1);
 	this->temperature = Buffer(width, height, depth, 1);
 	this->div = Buffer(width, height, depth, 3);
+
 }
 
 Fluid::~Fluid() {
@@ -51,8 +52,8 @@ void Fluid::update(float dt) {
 
 	//Apply forces
 	bouyancy(dt);
-	splat(density, glm::vec2(0.5 * width, 0.5 * height), 30, 1); //TODO add splats somewhere else
-	splat(temperature, glm::vec2(0.5 * width, 0.5 * height), 30, 1);
+	splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 30, 1); //TODO add splats somewhere else
+	splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 30, 1);
 
 	divergence();
 	pressure.clear();
@@ -63,27 +64,26 @@ void Fluid::update(float dt) {
 	boundary();
 }
 
-void Fluid::render() {
+void Fluid::render(GLuint boxVBO) {
 	drawShader.use();
 
 	drawShader.setInt("toDraw", 0);
 	drawShader.setVec3("fillColor", glm::vec3(1, 1, 1)); //TODO fun color function?
 	drawShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Set render target to the backbuffer:
-	glViewport(0, 0, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, width, height); //TODO change from width and height
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glEnable(GL_BLEND);
 
 	// Draw ink:
+	glBindBuffer(GL_ARRAY_BUFFER, boxVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, density.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, density.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArrays(GL_POINTS, 0, 1);
 
 	glDisable(GL_BLEND);
 }
@@ -142,11 +142,11 @@ void Fluid::gradsub() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, pressure.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, pressure.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, velocity.out.depth);
 
 	resetState();
 	velocity.swapFrameBuffers();
@@ -162,11 +162,11 @@ void Fluid::jacobi() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, pressure.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pressure.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, pressure.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, div.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, div.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, pressure.out.depth);
 
 	resetState();
 	pressure.swapFrameBuffers();
@@ -176,29 +176,29 @@ void Fluid::boundary() {
 	boundaryShader.use();
 
 	boundaryShader.setInt("velocity", 0);
-	boundaryShader.setVec2("screenSize", glm::vec2(width, height));
+	boundaryShader.setVec3("boxSize", glm::vec3(width, height, depth));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, velocity.out.depth);
 
 	resetState();
 	velocity.swapFrameBuffers();
 }
 
-void Fluid::splat(Buffer& toSplat, glm::vec2 positon, float radius, float value) {
+void Fluid::splat(Buffer& toSplat, glm::vec3 positon, float radius, float value) {
 	splatShader.use();
 
-	splatShader.setVec2("point", positon);
+	splatShader.setVec3("point", positon);
 	splatShader.setFloat("radius", radius);
 	splatShader.setVec3("splatAmount", glm::vec3(value, value, value));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toSplat.in.fboHandle);
 	glEnable(GL_BLEND);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, toSplat.in.depth);
 
 	resetState();
 }
@@ -215,13 +215,13 @@ void Fluid::bouyancy(float dt) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, temperature.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, temperature.in.colorTexture);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, density.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, density.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, velocity.out.depth);
 
 	resetState();
 	velocity.swapFrameBuffers();

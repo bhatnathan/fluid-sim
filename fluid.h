@@ -10,7 +10,7 @@ public:
 	~Fluid();
 
 	void update(float dt);
-	void render();
+	void render(GLuint boxVBO);
 private:
 	int width;
 	int height;
@@ -42,7 +42,7 @@ private:
 	void gradsub();
 	void jacobi();
 	void boundary();
-	void splat(Buffer& toSplat, glm::vec2 positon, float radius, float value);
+	void splat(Buffer& toSplat, glm::vec3 positon, float radius, float value);
 	void bouyancy(float dt);
 };
 

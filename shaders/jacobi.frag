@@ -3,23 +3,25 @@
 // Output data
 out vec4 jacobiOut;
 
-uniform sampler2D xVec;
-uniform sampler2D bVec; //Ax = b
+uniform sampler3D xVec;
+uniform sampler3D bVec; //Ax = b
 
 uniform float alpha;
 uniform float inverseBeta;
 
 void main() {
-	ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
 
-	vec4 xR = texelFetchOffset(xVec, fragCoord, 0, ivec2(1, 0));
-	vec4 xT = texelFetchOffset(xVec, fragCoord, 0, ivec2(0, 1));
-	vec4 xL = texelFetchOffset(xVec, fragCoord, 0, ivec2(-1, 0));
-	vec4 xB = texelFetchOffset(xVec, fragCoord, 0, ivec2(0, -1));
+	vec4 xE = texelFetchOffset(xVec, fragCoord, 0, ivec3(1, 0, 0));
+	vec4 xN = texelFetchOffset(xVec, fragCoord, 0, ivec3(0, 1, 0));
+	vec4 xU = texelFetchOffset(xVec, fragCoord, 0, ivec3(0, 0, 1));
+	vec4 xW = texelFetchOffset(xVec, fragCoord, 0, ivec3(-1, 0, 0));
+	vec4 xS = texelFetchOffset(xVec, fragCoord, 0, ivec3(0, -1, 0));
+	vec4 xD = texelFetchOffset(xVec, fragCoord, 0, ivec3(0, 0, -1));
 
 	// b sample, from center
 	vec4 bC = texelFetch(bVec, fragCoord, 0);
 
 	// evaluate Jacobi iteration
-	jacobiOut = (xR + xT + xL + xB + alpha * bC) * inverseBeta;
+	jacobiOut = (xE + xN + xU + xW + xS + xD + alpha * bC) * inverseBeta;
 }

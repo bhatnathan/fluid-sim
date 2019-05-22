@@ -1,21 +1,23 @@
 #version 330 core
 
 // Output data
-out vec2 newVelocity;
+out vec3 newVelocity;
 
-uniform sampler2D velocity;
-uniform sampler2D pressure;
+uniform sampler3D velocity;
+uniform sampler3D pressure;
 
 uniform vec2 screenSize;
 
 void main() {
-	ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
 
-	float pR = texelFetchOffset(pressure, fragCoord, 0, ivec2(1, 0)).x;
-	float pT = texelFetchOffset(pressure, fragCoord, 0, ivec2(0, 1)).x;
-	float pL = texelFetchOffset(pressure, fragCoord, 0, ivec2(-1, 0)).x;
-	float pB = texelFetchOffset(pressure, fragCoord, 0, ivec2(0, -1)).x;
+	float pE = texelFetchOffset(pressure, fragCoord, 0, ivec3(1, 0, 0)).x;
+	float pN = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, 1, 0)).x;
+	float pU = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, 0, 1)).x;
+	float pW = texelFetchOffset(pressure, fragCoord, 0, ivec3(-1, 0, 0)).x;
+	float pS = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, -1, 0)).x;
+	float pD = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, 0, -1)).x;
 
-	newVelocity = texelFetch(velocity, fragCoord, 0).xy;
-	newVelocity.xy -= vec2(pR - pL, pT - pB);
+	newVelocity = texelFetch(velocity, fragCoord, 0).xyz;
+	newVelocity -= 0.5 * vec3(pE - pW, pN - pS, pU - pD); //TODO make the 0.5 a parameter
 }

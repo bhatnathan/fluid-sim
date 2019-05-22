@@ -159,7 +159,7 @@ void draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-	fluid.render();
+	fluid.render(cubeCenterVBO);
 
 	// Swap buffers
 	glfwSwapBuffers(window);
