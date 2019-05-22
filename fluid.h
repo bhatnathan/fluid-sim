@@ -14,6 +14,7 @@ public:
 private:
 	int width;
 	int height;
+	int depth;
 	int solverIterations;
 	float dissipation;
 	float fluidBouyancy;

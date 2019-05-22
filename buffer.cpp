@@ -31,16 +31,16 @@ FrameBuffer::FrameBuffer(GLsizei width, GLsizei height, GLsizei depth, unsigned 
 
 	switch (numComponents) {
 		case 1: 
-			glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, width, height, depth, 0, GL_RED, GL_FLOAT, 0);
+			glTexImage3D(GL_TEXTURE_3D, 0, GL_R16F, width, height, depth, 0, GL_RED, GL_HALF_FLOAT, 0);
 			break;
 		case 2: 
-			glTexImage3D(GL_TEXTURE_3D, 0, GL_RG32F, width, height, depth, 0, GL_RG, GL_FLOAT, 0);
+			glTexImage3D(GL_TEXTURE_3D, 0, GL_RG16F, width, height, depth, 0, GL_RG, GL_HALF_FLOAT, 0);
 			break;
 		case 3: 
-			glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, width, height, depth, 0, GL_RGB, GL_FLOAT, 0);
+			glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, width, height, depth, 0, GL_RGB, GL_HALF_FLOAT, 0);
 			break;
 		case 4: 
-			glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F, width, height, depth, 0, GL_RGBA, GL_FLOAT, 0); 
+			glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA16F, width, height, depth, 0, GL_RGBA, GL_HALF_FLOAT, 0); 
 			break;
 		default: 
 			throw "Illegal number of FrameBuffer channels.";
@@ -66,7 +66,7 @@ FrameBuffer::FrameBuffer(GLsizei width, GLsizei height, GLsizei depth, unsigned 
 }
 
 Buffer::Buffer() {
-
+	
 }
 
 Buffer::Buffer(GLsizei width, GLsizei height, GLsizei depth, unsigned int numComponents) {

@@ -13,9 +13,9 @@ constexpr unsigned int SCRN_W = 1280;
 constexpr unsigned int SCRN_H = 720;
 
 //Simulation paramaters
-constexpr unsigned int BOX_W = 500;
-constexpr unsigned int BOX_H = 500;
-constexpr unsigned int BOX_D = 500;
+constexpr unsigned int BOX_W = 96; //Note that making the box too large will result in the frame buffer object not being able to be created
+constexpr unsigned int BOX_H = 96;
+constexpr unsigned int BOX_D = 96;
 constexpr unsigned int JACOBI_ITERATIONS = 80;
 constexpr float DISSIPATION = 1.0f;
 constexpr float BOUYANCY = 300.0f;
@@ -94,7 +94,7 @@ int initProgram() {
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-	//cube center vbo
+	//Cube Center vbo
 	float p[] = { 0, 0, 0 };
 	glGenBuffers(1, &cubeCenterVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeCenterVBO);
@@ -117,6 +117,7 @@ int initProgram() {
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnableVertexAttribArray(0);
 	return 0;
 }
 

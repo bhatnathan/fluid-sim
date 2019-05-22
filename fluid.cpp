@@ -5,6 +5,7 @@
 Fluid::Fluid() {
 	this->width = 0;
 	this->height = 0;
+	this->depth = 0;
 	this->solverIterations = 0;
 	this->dissipation = 0;
 	this->fluidBouyancy = 0;
@@ -14,6 +15,7 @@ Fluid::Fluid() {
 Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
 	this->width = width;
 	this->height = height;
+	this->depth = depth;
 	this->solverIterations = solverIterations;
 	this->dissipation = dissipation;
 	this->fluidBouyancy = fluidBouyancy;
@@ -101,15 +103,15 @@ void Fluid::advect(Buffer& toAdvect, float dt) {
 	advectShader.setInt("advecting", 1);
 	advectShader.setFloat("timeStep", dt);
 	advectShader.setFloat("dissipation", dissipation);
-	advectShader.setVec2("inverseScreenSize", glm::vec2(1.0 / width, 1.0 / height));
+	advectShader.setVec3("inverseBoxSize", glm::vec3(1.0 / width, 1.0 / height, 1.0 / depth));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toAdvect.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, toAdvect.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, toAdvect.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, toAdvect.out.depth);
 
 	resetState();
 	toAdvect.swapFrameBuffers();
@@ -123,9 +125,9 @@ void Fluid::divergence() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, div.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, velocity.in.colorTexture);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, div.out.depth);
 
 	resetState();
 	div.swapFrameBuffers();

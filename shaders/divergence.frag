@@ -3,17 +3,19 @@
 // Output data
 out float divergence;
 
-uniform sampler2D vecField;
+uniform sampler3D vecField;
 
 uniform float divergenceMod;
 
 void main() {
-	ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+	ivec3 fragCoord = ivec3(gl_FragCoord.xyz);
 
-	float wR = texelFetchOffset(vecField, fragCoord, 0, ivec2(1, 0)).x;
-	float wT = texelFetchOffset(vecField, fragCoord, 0, ivec2(0, 1)).y;
-	float wL = texelFetchOffset(vecField, fragCoord, 0, ivec2(-1, 0)).x;
-	float wB = texelFetchOffset(vecField, fragCoord, 0, ivec2(0, -1)).y;
+	float wE = texelFetchOffset(vecField, fragCoord, 0, ivec3(1, 0, 0)).x;
+	float wN = texelFetchOffset(vecField, fragCoord, 0, ivec3(0, 1, 0)).y;
+	float wU = texelFetchOffset(vecField, fragCoord, 0, ivec3(0, 0, 1)).z;
+	float wW = texelFetchOffset(vecField, fragCoord, 0, ivec3(-1, 0, 0)).x;
+	float wS = texelFetchOffset(vecField, fragCoord, 0, ivec3(0, -1, 0)).y;
+	float wD = texelFetchOffset(vecField, fragCoord, 0, ivec3(0, 0, -1)).z;
 
-	divergence = divergenceMod * ((wR - wL) + (wT - wB));
+	divergence = divergenceMod * ((wE - wW) + (wN - wS) + (wU - wD));
 }
