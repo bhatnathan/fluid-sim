@@ -9,8 +9,8 @@
 #include "shader.h"
 #include "fluid.h"
 
-constexpr unsigned int SCRN_W = 720;
-constexpr unsigned int SCRN_H = 720;
+constexpr unsigned int SCRN_W = 1080;
+constexpr unsigned int SCRN_H = 1080;
 constexpr float ROTATE_STEP = 2.5;
 
 //Simulation paramaters

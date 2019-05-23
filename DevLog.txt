@@ -87,3 +87,11 @@ I ran into some problems with the black screen of death for a few (possibly 5) h
 Tomorrow I plan on cleaning up my code a whole lot, and playing around with parameters, and possibly a different solver (mentioned in chapter 30) that improves detail apparently. I might have some work to do in other courses but if not I may also start on my report for this project.
 
 I'm so happy I didn't give up.
+
+2019-05-23
+
+Today I cleaned up the code and added a higher order advection scheme, called the MacCormack Advection Scheme, that was stated in GPU gems 3 chapter 30. I only use the advection scheme on the velocity, this keeps the dye relatively misty. 
+
+I also added some controls so the simulation can be rotated and so that you can puff "smoke" at will. I also added an auto function so you can turn it on to produce smoke continuously.
+
+Tomorrow I write the report!
