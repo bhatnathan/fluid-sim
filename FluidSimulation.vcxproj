@@ -132,7 +132,6 @@
     <ClCompile Include="fluid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
-    <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="buffer.h" />
@@ -146,7 +145,6 @@
     <ClInclude Include="include\glew\glxew.h" />
     <ClInclude Include="include\glew\wglew.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\freeglut.lib" />
