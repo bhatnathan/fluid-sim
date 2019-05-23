@@ -3,14 +3,14 @@
 // Output Data
 out vec4 advectOut;
 
+// Input Data
+in float gLayer;
+
 uniform sampler3D velocity;
 uniform sampler3D advecting;
 
 uniform float timeStep;
-uniform float dissipation;
 uniform vec3 inverseBoxSize;
-
-in float gLayer;
 
 vec3 trilerp(sampler3D d, vec3 p) {
     vec3 uv = (floor(p - 0.5) + 0.5) * inverseBoxSize;
@@ -33,6 +33,5 @@ void main() {
 
     vec3 u = texture(velocity, inverseBoxSize * fragCoord).xyz;
     vec3 coord = fragCoord - timeStep * u;
-    advectOut = vec4(dissipation * trilerp(advecting, coord), 1.0);
-
+    advectOut = vec4(trilerp(advecting, coord), 1.0);
 }

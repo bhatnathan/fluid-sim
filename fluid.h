@@ -13,6 +13,9 @@ public:
 	void update(float dt, GLuint quadVBO);
 	void render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight);
 
+	void puff();
+	void toggleAuto();
+
 	Transform& getTransform();
 private:
 	int width;
@@ -22,8 +25,11 @@ private:
 	float dissipation;
 	float fluidBouyancy;
 	float fluidWeight;
+	bool applyPuff;
+	bool autoRun;
 
 	Shader advectShader;
+	Shader maccormackShader;
 	Shader divergenceShader;
 	Shader gradsubShader;
 	Shader jacobiShader;
@@ -37,17 +43,21 @@ private:
 	Buffer pressure;
 	Buffer temperature;
 	Buffer div;
+	Buffer phi;
 
 	Transform transform;
 
 	void resetState();
 
 	void advect(Buffer& toAdvect, float dt);
+	void advectHigher(Buffer& toAdvect, float dt);
+	void advect(Buffer& toAdvect, float dt, Buffer& phi);
+	void maccormack(Buffer& toAdvect, float dt, Buffer& phi);
 	void divergence();
 	void gradsub();
 	void jacobi();
 	void boundary();
-	void splat(Buffer& toSplat, glm::vec3 positon, float radius, float value);
+	void splat(Buffer& toSplat, glm::vec3 positon, float radius, glm::vec3 value);
 	void bouyancy(float dt);
 };
 

@@ -118,5 +118,8 @@
     <None Include="shaders\base.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shaders\maccormack.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -10,6 +10,8 @@ Fluid::Fluid() {
 	this->dissipation = 0;
 	this->fluidBouyancy = 0;
 	this->fluidWeight = 0;
+	this->applyPuff = false;
+	this->autoRun = false;
 }
 
 Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissipation, float fluidBouyancy, float fluidWeight) {
@@ -20,8 +22,11 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->dissipation = dissipation;
 	this->fluidBouyancy = fluidBouyancy;
 	this->fluidWeight = fluidWeight;
+	this->applyPuff = false;
+	this->autoRun = false;
 
 	this->advectShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/advect.frag");
+	this->maccormackShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/maccormack.frag");
 	this->divergenceShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/divergence.frag");
 	this->gradsubShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/gradsub.frag");
 	this->jacobiShader = Shader("shaders/base.vert", "shaders/base.geom", "shaders/jacobi.frag");
@@ -35,6 +40,7 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->pressure = Buffer(width, height, depth, 1);
 	this->temperature = Buffer(width, height, depth, 1);
 	this->div = Buffer(width, height, depth, 3);
+	this->phi = Buffer(width, height, depth, 3);
 }
 
 Fluid::~Fluid() {
@@ -45,13 +51,23 @@ void Fluid::update(float dt, GLuint quadVBO) {
 	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
 	glViewport(0, 0, width, height);
 
-	advect(velocity, dt);
+	advectHigher(velocity, dt);
+	//advect(velocity, dt);
+	//advectHigher(temperature, dt);
+	//advect(temperature, dt);
+	//advectHigher(density, dt);
 	advect(density, dt);
+
 
 	//Apply forces
 	bouyancy(dt);
-	splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1); //TODO add splats somewhere else
-	splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, 1);
+	if (applyPuff) {
+		//splat(velocity, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 5, vec3(0, 100, 0));
+		splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, glm::vec3(1, 1, 1));
+		splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, glm::vec3(1, 1, 1));
+		if (!autoRun)
+			applyPuff = false;
+	}
 
 	divergence();
 	pressure.clear();
@@ -62,7 +78,6 @@ void Fluid::update(float dt, GLuint quadVBO) {
 	boundary();
 }
 
-//TODO remove unused variables
 void Fluid::render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight) {
 	glm::mat4 modelView = view * transform.getMatrix();
 	glm::mat4 mvp = projection * modelView;
@@ -92,6 +107,15 @@ void Fluid::render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int scre
 	glDisable(GL_BLEND);
 }
 
+void Fluid::puff() {
+	applyPuff = true;
+}
+
+void Fluid::toggleAuto() {
+	autoRun = !autoRun;
+	applyPuff = autoRun;
+}
+
 Transform& Fluid::getTransform() {
 	return transform;
 }
@@ -105,18 +129,54 @@ void Fluid::resetState() {
 }
 
 void Fluid::advect(Buffer& toAdvect, float dt) {
+	advect(toAdvect, dt, toAdvect);
+}
+
+void Fluid::advectHigher(Buffer& toAdvect, float dt) {
+	advect(toAdvect, dt, phi);
+	advect(phi, -dt, phi);
+	maccormack(toAdvect, dt, phi);
+}
+
+void Fluid::advect(Buffer& toAdvect, float dt, Buffer& phi) {
 	advectShader.use();
 
 	advectShader.setInt("velocity", 0);
 	advectShader.setInt("advecting", 1);
 	advectShader.setFloat("timeStep", dt);
-	advectShader.setFloat("dissipation", dissipation);
 	advectShader.setVec3("inverseBoxSize", glm::vec3(1.0 / width, 1.0 / height, 1.0 / depth));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, phi.out.fboHandle);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_3D, toAdvect.in.colorTexture);
+
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, phi.out.depth);
+
+	resetState();
+	phi.swapFrameBuffers();
+}
+
+void Fluid::maccormack(Buffer& toAdvect, float dt, Buffer& phi) {
+	maccormackShader.use();
+
+	maccormackShader.setInt("velocity", 0);
+	maccormackShader.setInt("phiHat1", 1);
+	maccormackShader.setInt("phiHat", 2);
+	maccormackShader.setInt("phi", 3);
+	maccormackShader.setFloat("timeStep", dt);
+	maccormackShader.setFloat("dissipation", dissipation);
+	maccormackShader.setVec3("inverseBoxSize", glm::vec3(1.0 / width, 1.0 / height, 1.0 / depth));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toAdvect.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, velocity.in.colorTexture);
 	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_3D, phi.out.colorTexture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_3D, phi.in.colorTexture);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_3D, toAdvect.in.colorTexture);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, toAdvect.out.depth);
@@ -197,12 +257,12 @@ void Fluid::boundary() {
 	velocity.swapFrameBuffers();
 }
 
-void Fluid::splat(Buffer& toSplat, glm::vec3 positon, float radius, float value) {
+void Fluid::splat(Buffer& toSplat, glm::vec3 positon, float radius, glm::vec3 value) {
 	splatShader.use();
 
 	splatShader.setVec3("point", positon);
 	splatShader.setFloat("radius", radius);
-	splatShader.setVec3("splatAmount", glm::vec3(value, value, value));
+	splatShader.setVec3("splatAmount", value);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, toSplat.in.fboHandle);
 	glEnable(GL_BLEND);

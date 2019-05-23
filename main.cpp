@@ -19,8 +19,8 @@ constexpr unsigned int BOX_H = 200;
 constexpr unsigned int BOX_D = 200;
 constexpr unsigned int JACOBI_ITERATIONS = 40;
 constexpr float DISSIPATION = 1.0f;
-constexpr float BOUYANCY = 100.0f;
-constexpr float WEIGHT = 1.0f;
+constexpr float BOUYANCY = 300.0f;
+constexpr float WEIGHT = 3.0f;
 
 using namespace glm;
 
@@ -191,6 +191,12 @@ void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
 				break;
 			case GLFW_KEY_D:
 				fluid.getTransform().rotate(angleAxis(radians(-ROTATE_STEP), vec3(0.0f, 0.0f, 1.0f)));
+				break;
+			case GLFW_KEY_Z:
+				fluid.toggleAuto();
+				break;
+			case GLFW_KEY_X:
+				fluid.puff();
 				break;
 		}
 }
