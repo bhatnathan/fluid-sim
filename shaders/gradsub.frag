@@ -1,14 +1,16 @@
 #version 330 core
 
-// Output data
+// Output Data
 out vec3 newVelocity;
+
+// Input Data
+in float gLayer;
 
 uniform sampler3D velocity;
 uniform sampler3D pressure;
 
 uniform vec2 screenSize;
-
-in float gLayer;
+uniform float gradScale;
 
 void main() {
 	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
@@ -21,5 +23,5 @@ void main() {
 	float pD = texelFetchOffset(pressure, fragCoord, 0, ivec3(0, 0, -1)).x;
 
 	newVelocity = texelFetch(velocity, fragCoord, 0).xyz;
-	newVelocity -= 0.5 * vec3(pE - pW, pN - pS, pU - pD); //TODO make the 0.5 a parameter
+	newVelocity -= gradScale * vec3(pE - pW, pN - pS, pU - pD);
 }

@@ -1,44 +1,45 @@
 #version 330 core
 
 // Output Data
-out vec4 FragColor;
+out vec4 fragColor;
 
-uniform sampler3D Density;
-uniform vec3 LightPosition = vec3(1.0, 1.0, 2.0);
-uniform vec3 LightIntensity = vec3(10.0);
-uniform float Absorption = 10.0;
-uniform mat4 Modelview;
-uniform float FocalLength;
-uniform vec2 WindowSize;
-uniform vec3 RayOrigin;
+uniform sampler3D densitySampler;
+
+uniform vec3 lightPosition = vec3(0.0, 0.0, 3.5);
+uniform vec3 lightIntensity = vec3(10.0);
+uniform float absorption = 10.0;
+uniform mat4 modelView;
+uniform float focalLength;
+uniform vec2 screenSize;
+uniform vec3 rayOrigin;
 
 const float maxDist = sqrt(2.0);
-const int numSamples = 128;
+const int numSamples = 256; //increase for higher res, costly though
 const float stepSize = maxDist/float(numSamples);
 const int numLightSamples = 32;
 const float lscale = maxDist / float(numLightSamples);
 const float densityFactor = 10;
 
-float GetDensity(vec3 pos)
+float getDensity(vec3 pos)
 {
-    return texture(Density, pos).x * densityFactor;
+    return texture(densitySampler, pos).x * densityFactor;
 }
 
 struct Ray {
-    vec3 Origin;
-    vec3 Dir;
+    vec3 origin;
+    vec3 dir;
 };
 
 struct AABB {
-    vec3 Min;
-    vec3 Max;
+    vec3 minV;
+    vec3 maxV;
 };
 
 bool IntersectBox(Ray r, AABB aabb, out float t0, out float t1)
 {
-    vec3 invR = 1.0 / r.Dir;
-    vec3 tbot = invR * (aabb.Min-r.Origin);
-    vec3 ttop = invR * (aabb.Max-r.Origin);
+    vec3 invR = 1.0 / r.dir;
+    vec3 tbot = invR * (aabb.minV-r.origin);
+    vec3 ttop = invR * (aabb.maxV-r.origin);
     vec3 tmin = min(ttop, tbot);
     vec3 tmax = max(ttop, tbot);
     vec2 t = max(tmin.xx, tmin.yz);
@@ -51,53 +52,53 @@ bool IntersectBox(Ray r, AABB aabb, out float t0, out float t1)
 void main()
 {
     vec3 rayDirection;
-    rayDirection.xy = 2.0 * gl_FragCoord.xy / WindowSize - 1.0;
-    rayDirection.z = -FocalLength;
-    rayDirection = (vec4(rayDirection, 0) * Modelview).xyz;
+    rayDirection.xy = 2.0 * gl_FragCoord.xy / screenSize - 1.0;
+    rayDirection.z = -focalLength;
+    rayDirection = (vec4(rayDirection, 0) * modelView).xyz;
 
-    Ray eye = Ray( RayOrigin, normalize(rayDirection) );
+    Ray eye = Ray( rayOrigin, normalize(rayDirection) );
     AABB aabb = AABB(vec3(-1.0), vec3(+1.0));
 
     float tnear, tfar;
     IntersectBox(eye, aabb, tnear, tfar);
     if (tnear < 0.0) tnear = 0.0;
 
-    vec3 rayStart = eye.Origin + eye.Dir * tnear;
-    vec3 rayStop = eye.Origin + eye.Dir * tfar;
+    vec3 rayStart = eye.origin + eye.dir * tnear;
+    vec3 rayStop = eye.origin + eye.dir * tfar;
     rayStart = 0.5 * (rayStart + 1.0);
     rayStop = 0.5 * (rayStop + 1.0);
 
     vec3 pos = rayStart;
     vec3 step = normalize(rayStop-rayStart) * stepSize;
     float travel = distance(rayStop, rayStart);
-    float T = 1.0;
-    vec3 Lo = vec3(0.0);
+    float t = 1.0;
+    vec3 lo = vec3(0.0);
 
     for (int i=0; i < numSamples && travel > 0.0; ++i, pos += step, travel -= stepSize) {
 
-        float density = GetDensity(pos);
+        float density = getDensity(pos);
         if (density <= 0.0)
             continue;
 
-        T *= 1.0-density*stepSize*Absorption;
-        if (T <= 0.01)
+        t *= 1.0-density*stepSize*absorption;
+        if (t <= 0.01)
             break;
 
-        vec3 lightDir = normalize(LightPosition-pos)*lscale;
-        float Tl = 1.0;
+        vec3 lightDir = normalize(lightPosition-pos)*lscale;
+        float tl = 1.0;
         vec3 lpos = pos + lightDir;
 
         for (int s=0; s < numLightSamples; ++s) {
-            float ld = texture(Density, lpos).x;
-            Tl *= 1.0-Absorption*stepSize*ld;
-            if (Tl <= 0.01) 
+            float ld = texture(densitySampler, lpos).x;
+            tl *= 1.0-absorption*stepSize*ld;
+            if (tl <= 0.01) 
             lpos += lightDir;
         }
 
-        vec3 Li = LightIntensity*Tl;
-        Lo += Li*T*density*stepSize;
+        vec3 li = lightIntensity*tl;
+        lo += li*t*density*stepSize;
     }
 
-    FragColor.rgb = Lo;
-    FragColor.a = 1-T;
+    fragColor.rgb = lo;
+    fragColor.a = 1-t;
 }

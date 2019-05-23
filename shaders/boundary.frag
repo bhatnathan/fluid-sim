@@ -1,13 +1,14 @@
 #version 330 core
 
-// Output data
+// Output Data
 out vec4 velocityOut;
+
+// Input Data
+in float gLayer;
 
 uniform sampler3D velocity;
 
 uniform vec3 boxSize;
-
-in float gLayer;
 
 void main() {
 

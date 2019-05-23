@@ -10,7 +10,7 @@ public:
 	~Fluid();
 
 	void update(float dt, GLuint quadVBO);
-	void render(GLuint boxVBO, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight);
+	void render(GLuint boxVBO, glm::mat4 modelView, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight);
 private:
 	int width;
 	int height;

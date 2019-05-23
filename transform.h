@@ -20,7 +20,6 @@ public:
 	void setPos(vec3 pos);
 	void setRot(quat rot);
 	void setScale(vec3 scale);
-	void setMatrix();
 private:
 	vec3 pos;
 	quat rot;

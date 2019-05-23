@@ -2,9 +2,6 @@
 
 #include "include\glm\gtc\matrix_transform.hpp"
 #include "include\glm\gtx\quaternion.hpp"
-#include "include\glm\gtc\type_ptr.hpp"
-#include "include\freeglut\freeglut.h"
-
 
 Transform::Transform() {
 	this->pos = vec3();
@@ -45,9 +42,4 @@ void Transform::setRot(quat rot) {
 
 void Transform::setScale(vec3 scale) {
 	this->scale = scale;
-}
-
-void Transform::setMatrix() {
-	float* mat = (float*)glm::value_ptr(this->getMatrix());
-	glLoadMatrixf(mat);
 }

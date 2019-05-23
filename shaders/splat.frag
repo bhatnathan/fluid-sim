@@ -3,14 +3,14 @@
 // Output Data
 out vec4 splatOut;
 
+// Input Data
+in float gLayer;
+
 uniform vec3 point;
 uniform float radius;
 uniform vec3 splatAmount;
 
-in float gLayer;
-
-void main()
-{
+void main() {
 	vec3 fragCoord = vec3(gl_FragCoord.xy, gLayer);
 
     float d = distance(point, fragCoord);

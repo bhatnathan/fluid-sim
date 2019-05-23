@@ -3,6 +3,9 @@
 // Output Data
 out vec3 velocityOut;
 
+// Input Data
+in float gLayer;
+
 uniform sampler3D velocity;
 uniform sampler3D temperature;
 uniform sampler3D density;
@@ -11,10 +14,7 @@ uniform float timeStep;
 uniform float bouyancy;
 uniform float weight;
 
-in float gLayer;
-
-void main()
-{
+void main() {
     ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);
 
 	float temperatureValue = texelFetch(temperature, fragCoord, 0).r;

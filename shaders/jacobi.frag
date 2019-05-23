@@ -1,15 +1,16 @@
 #version 330 core
 
-// Output data
+// Output Data
 out vec4 jacobiOut;
+
+// Input Data
+in float gLayer;
 
 uniform sampler3D xVec;
 uniform sampler3D bVec; //Ax = b
 
 uniform float alpha;
 uniform float inverseBeta;
-
-in float gLayer;
 
 void main() {
 	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);

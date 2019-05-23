@@ -1,11 +1,14 @@
 #version 330 core
 
-in vec4 Position;
-out vec4 vPosition;
-uniform mat4 ModelviewProjection;
+// Output Data
+out vec4 vertexPosition;
 
-void main()
-{
-    gl_Position = ModelviewProjection * Position;
-    vPosition = Position;
+// Input Data
+in vec4 position;
+
+uniform mat4 mvp;
+
+void main() {
+    gl_Position = mvp * position;
+    vertexPosition = position;
 }

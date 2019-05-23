@@ -1,15 +1,14 @@
 #version 330 core
 
-layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
- 
-in int vInstance[3];
+// Output Data
 out float gLayer;
+layout(triangle_strip, max_vertices = 3) out;
+
+// Input Data
+layout(triangles) in;
+in int vInstance[3];
  
-uniform float InverseSize;
- 
-void main()
-{
+void main() {
     gl_Layer = vInstance[0];
     gLayer = float(gl_Layer) + 0.5;
     gl_Position = gl_in[0].gl_Position;

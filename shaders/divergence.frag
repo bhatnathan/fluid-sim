@@ -1,13 +1,14 @@
 #version 330 core
 
-// Output data
+// Output Data
 out float divergence;
+
+// Input Data
+in float gLayer;
 
 uniform sampler3D vecField;
 
 uniform float divergenceMod;
-
-in float gLayer;
 
 void main() {
 	ivec3 fragCoord = ivec3(gl_FragCoord.xy, gLayer);

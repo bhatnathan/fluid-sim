@@ -35,14 +35,12 @@ Fluid::Fluid(int width, int height, int depth, int solverIterations, float dissi
 	this->pressure = Buffer(width, height, depth, 1);
 	this->temperature = Buffer(width, height, depth, 1);
 	this->div = Buffer(width, height, depth, 3);
-
 }
 
 Fluid::~Fluid() {
 }
 
 void Fluid::update(float dt, GLuint quadVBO) {
-	//TODO find out what these do and fix them
 	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
 	glViewport(0, 0, width, height);
@@ -64,19 +62,16 @@ void Fluid::update(float dt, GLuint quadVBO) {
 	boundary();
 }
 
-void Fluid::render(GLuint boxVBO, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight) {
+//TODO remove unused variables
+void Fluid::render(GLuint boxVBO, glm::mat4 modelView, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight) {
 	drawShader.use();
 
-	drawShader.setMatrix("ModelviewProjection", mvp);
-	drawShader.setMatrix("Modelview", model);
-	drawShader.setMatrix("ViewMatrix", view);
-	drawShader.setMatrix("ProjectionMatrix", projection);
-	drawShader.setInt("RayStartPoints", 1); //TODO check if needed. Could apply to more parameters
-	drawShader.setInt("RayStopPoints", 2);
-	drawShader.setVec3("EyePosition", glm::vec3(0, 0, 3.5f)); //TODO figure out what to set this to
-	drawShader.setVec3("RayOrigin", glm::vec3(glm::transpose(model) * glm::vec4(0, 0, 3.5f, 1))); //TODO change?
-	drawShader.setFloat("FocalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
-	drawShader.setVec2("WindowSize", glm::vec2(screenWidth, screenHeight));
+	drawShader.setMatrix("mvp", mvp);
+	drawShader.setMatrix("modelView", modelView);
+
+	drawShader.setVec3("rayOrigin", glm::vec3(glm::transpose(modelView) * glm::vec4(0, 0, 3.5f, 1))); //TODO Extract eye height from view?
+	drawShader.setFloat("focalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
+	drawShader.setVec2("screenSize", glm::vec2(screenWidth, screenHeight));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -145,6 +140,7 @@ void Fluid::gradsub() {
 	gradsubShader.setInt("velocity", 0);
 	gradsubShader.setInt("pressure", 1);
 	gradsubShader.setVec2("screenSize", glm::vec2(width, height));
+	gradsubShader.setFloat("gradScale", 0.5);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, velocity.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
@@ -164,7 +160,7 @@ void Fluid::jacobi() {
 	jacobiShader.setInt("xVec", 0);
 	jacobiShader.setInt("bVec", 1);
 	jacobiShader.setFloat("alpha", -1.0);
-	jacobiShader.setFloat("inverseBeta", 1.0/6.0);
+	jacobiShader.setFloat("inverseBeta", 1.0 / 6.0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, pressure.out.fboHandle);
 	glActiveTexture(GL_TEXTURE0);
