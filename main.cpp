@@ -9,7 +9,7 @@
 #include "shader.h"
 #include "fluid.h"
 
-constexpr unsigned int SCRN_W = 1280;
+constexpr unsigned int SCRN_W = 720;
 constexpr unsigned int SCRN_H = 720;
 
 //Simulation paramaters
@@ -139,7 +139,7 @@ void initSimulation() {
 void setUpMVP() {
 	//SET UP MODEL VIEW AND PROJECTION MATRICES
 	// Projection matrix : 45° Field of View, 16:9 ratio, display range : 0.0 unit <-> 100 units
-	projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.0f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), (float)SCRN_W / (float)SCRN_H, 0.0f, 100.0f);
 
 	// Or, for an ortho camera :
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
