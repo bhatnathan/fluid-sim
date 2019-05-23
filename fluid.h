@@ -2,6 +2,7 @@
 
 #include "shader.h"
 #include "buffer.h"
+#include "transform.h"
 
 class Fluid {
 public:
@@ -10,7 +11,9 @@ public:
 	~Fluid();
 
 	void update(float dt, GLuint quadVBO);
-	void render(GLuint boxVBO, glm::mat4 modelView, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight);
+	void render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight);
+
+	Transform& getTransform();
 private:
 	int width;
 	int height;
@@ -34,6 +37,8 @@ private:
 	Buffer pressure;
 	Buffer temperature;
 	Buffer div;
+
+	Transform transform;
 
 	void resetState();
 

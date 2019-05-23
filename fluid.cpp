@@ -63,13 +63,16 @@ void Fluid::update(float dt, GLuint quadVBO) {
 }
 
 //TODO remove unused variables
-void Fluid::render(GLuint boxVBO, glm::mat4 modelView, glm::mat4 view, glm::mat4 projection, glm::mat4 mvp, int screenWidth, int screenHeight) {
+void Fluid::render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight) {
+	glm::mat4 modelView = view * transform.getMatrix();
+	glm::mat4 mvp = projection * modelView;
+
 	drawShader.use();
 
 	drawShader.setMatrix("mvp", mvp);
 	drawShader.setMatrix("modelView", modelView);
 
-	drawShader.setVec3("rayOrigin", glm::vec3(glm::transpose(modelView) * glm::vec4(0, 0, 3.5f, 1))); //TODO Extract eye height from view?
+	drawShader.setVec3("rayOrigin", glm::vec3(glm::transpose(modelView) * (-view[3])));
 	drawShader.setFloat("focalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
 	drawShader.setVec2("screenSize", glm::vec2(screenWidth, screenHeight));
 
@@ -87,6 +90,10 @@ void Fluid::render(GLuint boxVBO, glm::mat4 modelView, glm::mat4 view, glm::mat4
 
 	glDrawArrays(GL_POINTS, 0, 1);
 	glDisable(GL_BLEND);
+}
+
+Transform& Fluid::getTransform() {
+	return transform;
 }
 
 void Fluid::resetState() {

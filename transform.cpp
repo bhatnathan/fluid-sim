@@ -43,3 +43,7 @@ void Transform::setRot(quat rot) {
 void Transform::setScale(vec3 scale) {
 	this->scale = scale;
 }
+
+void Transform::rotate(quat rotIn) {
+	this->rot = rotIn * this->rot;
+}

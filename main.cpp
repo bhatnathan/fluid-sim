@@ -11,6 +11,7 @@
 
 constexpr unsigned int SCRN_W = 720;
 constexpr unsigned int SCRN_H = 720;
+constexpr float ROTATE_STEP = 2.5;
 
 //Simulation paramaters
 constexpr unsigned int BOX_W = 200; //Note that making the box too large will result in the frame buffer object not being able to be created
@@ -23,10 +24,8 @@ constexpr float WEIGHT = 1.0f;
 
 using namespace glm;
 
-mat4 model;
 mat4 view;
 mat4 projection;
-mat4 mvp;
 GLuint cubeCenterVBO;
 GLuint quadVBO;
 
@@ -40,6 +39,7 @@ void initSimulation();
 void setUpMVP();
 void update();
 void draw();
+void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(int argc, char** argv) {
 
@@ -92,7 +92,8 @@ int initProgram() {
 	}
 
 	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetKeyCallback(window, keyEvent);
+	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	// Create the VAO:
 	GLuint vao;
@@ -150,11 +151,6 @@ void setUpMVP() {
 		glm::vec3(0, 0, 0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
-
-	// model matrix : an identity matrix (model will be at the origin)
-	model = glm::mat4(1.0f);
-	// Our ModelViewProjection : multiplication of our 3 matrices
-	mvp = projection * view * model; // Remember, matrix multiplication is the other way around
 }
 
 void update() {
@@ -169,8 +165,32 @@ void draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-	fluid.render(cubeCenterVBO, view * model, view, projection, mvp, SCRN_W, SCRN_H);
+	fluid.render(cubeCenterVBO, view, projection, SCRN_W, SCRN_H);
 
 	// Swap buffers
 	glfwSwapBuffers(window);
+}
+
+void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS || action == GLFW_REPEAT)
+		switch (key) {
+			case GLFW_KEY_Q:
+				fluid.getTransform().rotate(angleAxis(radians(ROTATE_STEP), vec3(1.0f, 0.0f, 0.0f)));
+				break;
+			case GLFW_KEY_A:
+				fluid.getTransform().rotate(angleAxis(radians(-ROTATE_STEP), vec3(1.0f, 0.0f, 0.0f)));
+				break;
+			case GLFW_KEY_W:
+				fluid.getTransform().rotate(angleAxis(radians(ROTATE_STEP), vec3(0.0f, 1.0f, 0.0f)));
+				break;
+			case GLFW_KEY_S:
+				fluid.getTransform().rotate(angleAxis(radians(-ROTATE_STEP), vec3(0.0f, 1.0f, 0.0f)));
+				break;
+			case GLFW_KEY_E:
+				fluid.getTransform().rotate(angleAxis(radians(ROTATE_STEP), vec3(0.0f, 0.0f, 1.0f)));
+				break;
+			case GLFW_KEY_D:
+				fluid.getTransform().rotate(angleAxis(radians(-ROTATE_STEP), vec3(0.0f, 0.0f, 1.0f)));
+				break;
+		}
 }
