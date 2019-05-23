@@ -1,4 +1,4 @@
-#include "include\glew\glew.h"
+﻿#include "include\glew\glew.h"
 #include "include\GLFW\glfw3.h"
 #include "include\glm\glm.hpp"
 
@@ -127,7 +127,7 @@ void initSimulation() {
 
 void setUpMVP() {
 	//SET UP MODEL VIEW AND PROJECTION MATRICES
-	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	Projection = glm::perspective(glm::radians(45.0f), (float)16 / (float)9, 0.1f, 100.0f);
 
 	// Or, for an ortho camera :
