@@ -137,7 +137,7 @@ void initSimulation() {
 }
 
 void setUpMVP() {
-	// Projection matrix : 45° Field of View, 16:9 ratio, display range : 0.0 unit <-> 100 units
+	// Projection matrix
 	projection = glm::perspective(glm::radians(45.0f), (float)SCRN_W / (float)SCRN_H, 0.0f, 100.0f);
 
 	// Camera matrix
