@@ -8,6 +8,7 @@ Shader::Shader() {
 	this->id = 0;
 }
 
+//This is taken from a tutorial
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;
@@ -60,6 +61,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	glDeleteShader(fragment);
 }
 
+//I took the above function and added a geometry shader
 Shader::Shader(const GLchar* vertexPath, const GLchar* geometryPath, const GLchar* fragmentPath) {
 	// 1. retrieve the vertex/geometry/fragment source code from filePath
 	std::string vertexCode;

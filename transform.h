@@ -6,6 +6,7 @@
 
 using namespace glm;
 
+//A transform class to hold the position, rotation and scale of an object. Can return a model matrix.
 class Transform {
 public:
 	Transform();
@@ -21,7 +22,7 @@ public:
 	void setRot(quat rot);
 	void setScale(vec3 scale);
 
-	void rotate(quat rotIn);
+	void rotate(quat rotIn); //This rotates around world axis, not local
 private:
 	vec3 pos;
 	quat rot;

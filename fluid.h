@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "transform.h"
 
+//Class to hold the fluid simulation
 class Fluid {
 public:
 	Fluid();
@@ -13,8 +14,8 @@ public:
 	void update(float dt, GLuint quadVBO);
 	void render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight);
 
-	void puff();
-	void toggleAuto();
+	void puff(); //For adding one puff of smoke/dye
+	void toggleAuto(); //For making a continuous fountain of smoke/dye
 
 	Transform& getTransform();
 private:
@@ -43,14 +44,15 @@ private:
 	Buffer pressure;
 	Buffer temperature;
 	Buffer div;
-	Buffer phi;
+	Buffer phi; //For MacCormack advection scheme
 
 	Transform transform;
 
 	void resetState();
 
+	//These shader functions are inspired by the tutorial I followed but are all written by me.
 	void advect(Buffer& toAdvect, float dt);
-	void advectHigher(Buffer& toAdvect, float dt);
+	void advectHigher(Buffer& toAdvect, float dt); //A higher order advection scheme using MacCormack advection
 	void advect(Buffer& toAdvect, float dt, Buffer& phi);
 	void maccormack(Buffer& toAdvect, float dt, Buffer& phi);
 	void divergence();

@@ -16,6 +16,7 @@ void main() {
 
 	velocityOut = texelFetch(velocity, fragCoord, 0);
 
+	//Check if on box edges
 	if (fragCoord.x - 1 < 0 || fragCoord.x + 2 > boxSize.x) {
         velocityOut.x = -texelFetch(velocity, fragCoord, 0).x;
     }

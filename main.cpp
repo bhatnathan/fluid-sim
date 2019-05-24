@@ -41,6 +41,7 @@ void update();
 void draw();
 void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+// I followed a tutorial to get this structure up and running, but most all of the code is written by me.
 int main(int argc, char** argv) {
 
 	if (initProgram() == -1)
@@ -91,9 +92,7 @@ int initProgram() {
 		return -1;
 	}
 
-	// Ensure we can capture the escape key being pressed below
 	glfwSetKeyCallback(window, keyEvent);
-	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	// Create the VAO:
 	GLuint vao;
@@ -138,18 +137,14 @@ void initSimulation() {
 }
 
 void setUpMVP() {
-	//SET UP MODEL VIEW AND PROJECTION MATRICES
 	// Projection matrix : 45° Field of View, 16:9 ratio, display range : 0.0 unit <-> 100 units
 	projection = glm::perspective(glm::radians(45.0f), (float)SCRN_W / (float)SCRN_H, 0.0f, 100.0f);
 
-	// Or, for an ortho camera :
-	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-
 	// Camera matrix
 	view = glm::lookAt(
-		glm::vec3(0, 0, 3.5), // Camera is at (4,3,3), in World Space
+		glm::vec3(0, 0, 3.5), // Camera is at (0,0,3.5), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
-		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		glm::vec3(0, 1, 0)  // Head is up
 	);
 }
 

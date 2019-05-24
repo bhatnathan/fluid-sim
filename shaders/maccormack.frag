@@ -45,8 +45,8 @@ void main() {
 	vec3 phiSample = texture(phi, inverseBoxSize * fragCoord).xyz;
 	vec3 phiHat1Sample = texture(phiHat1, inverseBoxSize * fragCoord).xyz;
 
-	vec3 result = phiHat1Sample + 0.5 * (phiSample - phiHatSample);
-	result = max(min(result, phiMax), phiMin);
+	vec3 result = phiHat1Sample + 0.5 * (phiSample - phiHatSample); //MacCormack step
+	result = max(min(result, phiMax), phiMin); //Clamp so it doesn't diverge
     
 	advectOut = vec4(dissipation * result, 1.0);
 }

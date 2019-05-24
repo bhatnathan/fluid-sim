@@ -10,6 +10,7 @@ FrameBuffer::FrameBuffer() {
 	this->depth = 1;
 }
 
+//This function is primarily taken from the tutorial I was following, however I cleaned up the code quite a bit.
 FrameBuffer::FrameBuffer(GLsizei width, GLsizei height, GLsizei depth, unsigned int numComponents) {
 	this->fboHandle = 0;
 	this->colorTexture = 0;

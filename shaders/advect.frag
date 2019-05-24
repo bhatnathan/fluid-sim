@@ -12,6 +12,7 @@ uniform sampler3D advecting;
 uniform float timeStep;
 uniform vec3 inverseBoxSize;
 
+//Trilinear interpolation
 vec3 trilerp(sampler3D d, vec3 p) {
     vec3 uv = (floor(p - 0.5) + 0.5) * inverseBoxSize;
     vec3 d000 = texture(d, uv + vec3(0,0,0) * inverseBoxSize).xyz;
@@ -32,6 +33,6 @@ void main() {
     vec3 fragCoord = vec3(gl_FragCoord.xy, gLayer);
 
     vec3 u = texture(velocity, inverseBoxSize * fragCoord).xyz;
-    vec3 coord = fragCoord - timeStep * u;
+    vec3 coord = fragCoord - timeStep * u; //Step backwards in time
     advectOut = vec4(trilerp(advecting, coord), 1.0);
 }

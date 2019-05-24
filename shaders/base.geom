@@ -1,5 +1,7 @@
 #version 330 core
 
+//Taken from tutorial
+
 // Output Data
 out float gLayer;
 layout(triangle_strip, max_vertices = 3) out;

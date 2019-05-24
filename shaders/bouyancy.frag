@@ -1,5 +1,7 @@
 #version 330
 
+//Mainly taken from tutorial but edited by me
+
 // Output Data
 out vec3 velocityOut;
 

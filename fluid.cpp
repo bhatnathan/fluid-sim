@@ -51,6 +51,7 @@ void Fluid::update(float dt, GLuint quadVBO) {
 	glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), 0);
 	glViewport(0, 0, width, height);
 
+	//You can choose which advection scheme to use and what to advect here, but note that you should only use ONE advection scheme on each component. These settings are my favorite.
 	advectHigher(velocity, dt);
 	//advect(velocity, dt);
 	//advectHigher(temperature, dt);
@@ -60,9 +61,9 @@ void Fluid::update(float dt, GLuint quadVBO) {
 
 
 	//Apply forces
-	bouyancy(dt);
+	bouyancy(dt); //can be commented to remove smoke physics
 	if (applyPuff) {
-		//splat(velocity, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 5, vec3(0, 100, 0));
+		//splat(velocity, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 5, vec3(0, 100, 0)); //Add to shoot smoke upwards. Should probably remove bouyancy if you do.
 		splat(density, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, glm::vec3(1, 1, 1));
 		splat(temperature, glm::vec3(0.5 * width, 0.5 * height, 0.5 * depth), 10, glm::vec3(1, 1, 1));
 		if (!autoRun)
@@ -71,13 +72,14 @@ void Fluid::update(float dt, GLuint quadVBO) {
 
 	divergence();
 	pressure.clear();
-	for (int i = 0; i < solverIterations; i++)
+	for (int i = 0; i < solverIterations; i++) //repeat many times to converge
 		jacobi();
 	gradsub();
 
 	boundary();
 }
 
+//Mainly taken from the tutorial, but with heavy code clean up and refactoring
 void Fluid::render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int screenWidth, int screenHeight) {
 	glm::mat4 modelView = view * transform.getMatrix();
 	glm::mat4 mvp = projection * modelView;
@@ -86,7 +88,6 @@ void Fluid::render(GLuint boxVBO, glm::mat4 view, glm::mat4 projection, int scre
 
 	drawShader.setMatrix("mvp", mvp);
 	drawShader.setMatrix("modelView", modelView);
-
 	drawShader.setVec3("rayOrigin", glm::vec3(glm::transpose(modelView) * (-view[3])));
 	drawShader.setFloat("focalLength", 1.0f / std::tan(glm::radians(45.0f) / 2));
 	drawShader.setVec2("screenSize", glm::vec2(screenWidth, screenHeight));

@@ -1,5 +1,7 @@
 #version 330 core
 
+//From tutorial
+
 // Output Data
 out vec4 fragColor;
 

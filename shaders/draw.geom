@@ -1,5 +1,7 @@
 #version 330 core
 
+//From tutorial
+
 // Output Data
 layout(triangle_strip, max_vertices = 24) out;
 

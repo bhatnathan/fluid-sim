@@ -44,6 +44,7 @@ void Transform::setScale(vec3 scale) {
 	this->scale = scale;
 }
 
-void Transform::rotate(quat rotIn) {
+//rotates around world axis
+void Transform::rotate(quat rotIn) { 
 	this->rot = rotIn * this->rot;
 }
